@@ -33,7 +33,9 @@
 			<Add option="-std=c++14" />
 			<Add option="-march=native -fno-strict-aliasing -flto -ftree-vectorize" />
 		</Compiler>
+		<Unit filename="component.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="ray.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
