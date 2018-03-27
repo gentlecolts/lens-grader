@@ -1,11 +1,20 @@
 # depslib dependency file v1.0
-1521932443 source:/home/zangoose/git/lens-grader/main.cpp
-	"component.h"
+1522097649 source:/home/zangoose/git/lens-grader/main.cpp
+	"lens.h"
 	<SDL2/SDL.h>
 
 1521929686 /home/zangoose/git/lens-grader/component.h
 	<vector>
 	"ray.h"
 
-1521929613 /home/zangoose/git/lens-grader/ray.h
+1522095440 /home/zangoose/git/lens-grader/ray.h
+
+1522095796 source:/home/zangoose/git/lens-grader/ray.cpp
+	"ray.h"
+
+1522097421 source:/home/zangoose/git/lens-grader/lens.cpp
+	"lens.h"
+
+1522097624 /home/zangoose/git/lens-grader/lens.h
+	"component.h"
 

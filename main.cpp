@@ -1,4 +1,4 @@
-#include "component.h"
+#include "element.h"
 #include <SDL2/SDL.h>
 using namespace std;
 
@@ -40,6 +40,8 @@ int main(int argc,char** argv){
 	rec.y=10;
 	rec.w=160;
 	rec.h=100;
+
+	element l;
 
 	while(1){
 		//SDL_FillRect(surface,NULL,SDL_MapRGB(surface->format,0xe5,0x5c,0x69));

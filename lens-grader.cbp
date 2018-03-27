@@ -38,7 +38,10 @@
 			<Add option="-march=native -fno-strict-aliasing -flto -ftree-vectorize" />
 		</Compiler>
 		<Unit filename="component.h" />
+		<Unit filename="element.cpp" />
+		<Unit filename="element.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="ray.cpp" />
 		<Unit filename="ray.h" />
 		<Extensions>
 			<code_completion />
