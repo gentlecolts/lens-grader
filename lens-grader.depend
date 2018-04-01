@@ -3,8 +3,9 @@
 	"lens.h"
 	<SDL2/SDL.h>
 
-1522599267 /home/zangoose/git/lens-grader/component.h
+1522600256 /home/zangoose/git/lens-grader/component.h
 	<vector>
+	<stdexcept>
 	"ray.h"
 
 1522095440 /home/zangoose/git/lens-grader/ray.h

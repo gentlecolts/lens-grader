@@ -2,6 +2,7 @@
 #define COMPONENT_H_INCLUDED
 
 #include <vector>
+#include <stdexcept>
 #include "ray.h"
 
 class component{
