@@ -4,11 +4,20 @@
 #include "component.h"
 #include "element.h"
 
-//basic, one-element group
+/*group with many elements
+all elements within the group move together, if at all
+elements may overlap for more complex shapes
+if elements overlap, accuracy cannot be guaranteed unless overlapping elements share the same index of refraction
+*/
 class group:public component{
-private:
-	element elm;
+protected:
+	std::vector<element*> elements;
 public:
+	double
+		front,back,//position of front and back of group, in lens-space
+		width,//width of group, also in lens-space
+		moveRange=0;//range of lens motion, as a percent
+
 	group();
 	virtual ~group();
 
