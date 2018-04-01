@@ -1,19 +1,20 @@
-#ifndef LENS_H
-#define LENS_H
+#ifndef ELEMENT_H
+#define ELEMENT_H
 
 #include "component.h"
 
 //a simple circular lens
-class element : public component{
+class element:public component{
 public:
 	std::vector<double> frontVals,backVals;
 	virtual std::vector<double> getRawValues();
 	virtual void setRawValues(const std::vector<double>& raw);
+	std::vector<component*> getChildren();
 
 	virtual ray checkRay(ray rin);
 
 	//for displaying on-screen
-	virtual std::vector<point> getPoints(int resolution);
+	virtual std::vector<point> getPoints();
 };
 
-#endif // LENS_H
+#endif // ELEMENT_H

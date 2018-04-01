@@ -40,6 +40,10 @@
 		<Unit filename="component.h" />
 		<Unit filename="element.cpp" />
 		<Unit filename="element.h" />
+		<Unit filename="group.cpp" />
+		<Unit filename="group.h" />
+		<Unit filename="lens.cpp" />
+		<Unit filename="lens.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="ray.cpp" />
 		<Unit filename="ray.h" />

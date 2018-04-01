@@ -8,11 +8,12 @@ class component{
 public:
 	virtual std::vector<double> getRawValues()=0;
 	virtual void setRawValues(const std::vector<double>& raw)=0;
+	virtual std::vector<component*> getChildren()=0;
 
 	virtual ray checkRay(ray rin)=0;
 
 	//for displaying on-screen
-	virtual std::vector<point> getPoints(int resolution)=0;
+	virtual std::vector<point> getPoints()=0;
 };
 
 #endif // COMPONENT_H_INCLUDED
