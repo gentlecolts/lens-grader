@@ -12,13 +12,13 @@ public:
 	group();
 	virtual ~group();
 
-	std::vector<double> getRawValues();
-	void setRawValues(const std::vector<double>& raw);
-	std::vector<component*> getChildren();
+	virtual std::vector<double> getRawValues();
+	virtual void setRawValues(const std::vector<double>& raw);
+	virtual std::vector<component*> getChildren();
 
-	ray checkRay(ray rin);
+	virtual ray checkRay(ray rin);
 
-	std::vector<point> getPoints();
+	virtual std::vector<point> getPoints();
 };
 
 #endif // GROUP_H

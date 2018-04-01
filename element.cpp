@@ -1,8 +1,11 @@
 #include "element.h"
 using namespace std;
-//lens::lens(){
+element::element(){
 	//ctor
-//}
+}
+element::~element(){
+	//dtor
+}
 
 vector<double> element::getRawValues(){
 	throw logic_error("Not Implemented");

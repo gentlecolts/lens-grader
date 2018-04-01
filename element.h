@@ -6,10 +6,13 @@
 //a simple circular lens
 class element:public component{
 public:
+	element();
+	virtual ~element();
+
 	std::vector<double> frontVals,backVals;
 	virtual std::vector<double> getRawValues();
 	virtual void setRawValues(const std::vector<double>& raw);
-	std::vector<component*> getChildren();
+	virtual std::vector<component*> getChildren();
 
 	virtual ray checkRay(ray rin);
 
