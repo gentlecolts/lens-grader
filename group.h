@@ -8,6 +8,9 @@
 all elements within the group move together, if at all
 elements may overlap for more complex shapes
 if elements overlap, accuracy cannot be guaranteed unless overlapping elements share the same index of refraction
+
+TODO: consider specialized subclasses of group that do not allow overlap for increased performance
+(lens would need to be updated to use a vector of group pointers)
 */
 class group:public component{
 protected:

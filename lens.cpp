@@ -1,7 +1,7 @@
 #include "lens.h"
 using namespace std;
 
-lens::lens(){
+lens::lens(std::vector<double> groupDivs,double focalLength):component(){
 	//ctor
 }
 

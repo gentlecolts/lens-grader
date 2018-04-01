@@ -5,12 +5,13 @@
 #include "group.h"
 
 class lens:public component{
-public:
+protected:
 	std::vector<group> groups;
-
-	lens();
+public:
+	lens(std::vector<double> groupDivs,double focalLength);
 	virtual ~lens();
 
+	//inherited from compoent
 	std::vector<double> getRawValues();
 	void setRawValues(const std::vector<double>& raw);
 	std::vector<component*> getChildren();
