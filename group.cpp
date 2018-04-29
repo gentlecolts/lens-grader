@@ -23,6 +23,6 @@ ray group::checkRay(ray rin){
 	throw logic_error("Not Implemented");
 }
 
-vector<point> group::getPoints(){
+void group::drawTo(pbuffer &pixels,rect &target){
 	throw logic_error("Not Implemented");
 }

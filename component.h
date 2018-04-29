@@ -14,7 +14,7 @@ public:
 	virtual ray checkRay(ray rin)=0;
 
 	//for displaying on-screen
-	virtual std::vector<point> getPoints()=0;
+	virtual void drawTo(pbuffer &pixels,rect &target)=0;
 };
 
 #endif // COMPONENT_H_INCLUDED

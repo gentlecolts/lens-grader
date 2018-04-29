@@ -22,6 +22,6 @@ ray element::checkRay(ray rin){
 }
 
 //for displaying on-screen
-vector<point> element::getPoints(){
+void element::drawTo(pbuffer &pixels,rect &target){
 	throw logic_error("Not Implemented");
 }

@@ -10,14 +10,14 @@ public:
 	virtual ~element();
 
 	std::vector<double> frontVals,backVals;
-	virtual std::vector<double> getRawValues();
-	virtual void setRawValues(const std::vector<double>& raw);
-	virtual std::vector<component*> getChildren();
+	virtual std::vector<double> getRawValues() override;
+	virtual void setRawValues(const std::vector<double>& raw) override;
+	virtual std::vector<component*> getChildren() override;
 
-	virtual ray checkRay(ray rin);
+	virtual ray checkRay(ray rin) override;
 
 	//for displaying on-screen
-	virtual std::vector<point> getPoints();
+	virtual void drawTo(pbuffer &pixels,rect &target) override;
 };
 
 #endif // ELEMENT_H

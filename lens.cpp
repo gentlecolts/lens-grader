@@ -23,6 +23,6 @@ ray lens::checkRay(ray rin){
 	throw logic_error("Not Implemented");
 }
 
-vector<point> lens::getPoints(){
+void lens::drawTo(pbuffer &pixels,rect &target){
 	throw logic_error("Not Implemented");
 }
