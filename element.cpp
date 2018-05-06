@@ -13,8 +13,8 @@ controlPts element::getControls(){
 void element::setControls(const controlPts& raw){
 	throw logic_error("Not Implemented");
 }
-vector<component*> element::getChildren(){
-	return vector<component*>();
+vector<std::shared_ptr<component>> element::getChildren(){
+	return vector<std::shared_ptr<component>>();
 }
 
 ray element::checkRay(ray rin){

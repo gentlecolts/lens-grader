@@ -14,19 +14,19 @@ TODO: consider specialized subclasses of group that do not allow overlap for inc
 */
 class group:public component{
 protected:
-	std::vector<element*> elements;
+	std::vector<std::shared_ptr<element>> elements;
 public:
 	double
 		front,back,//position of front and back of group, in lens-space
 		width,//width of group, also in lens-space
-		moveRange=0;//range of lens motion, as a percent
+		moveRange=0;//range of lens motion, as a percent[0-1]
 
 	group();
 	virtual ~group();
 
 	virtual controlPts getControls() override;
 	virtual void setControls(const controlPts& raw) override;
-	virtual std::vector<component*> getChildren() override;
+	virtual std::vector<std::shared_ptr<component>> getChildren() override;
 
 	virtual ray checkRay(ray rin) override;
 

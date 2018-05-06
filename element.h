@@ -12,7 +12,7 @@ public:
 	std::vector<double> frontVals,backVals;
 	virtual controlPts getControls() override;
 	virtual void setControls(const controlPts& raw) override;
-	virtual std::vector<component*> getChildren() override;
+	virtual std::vector<std::shared_ptr<component>> getChildren() override;
 
 	virtual ray checkRay(ray rin) override;
 

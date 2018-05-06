@@ -15,7 +15,7 @@ controlPts lens::getControls(){
 void lens::setControls(const controlPts& raw){
 	throw logic_error("Not Implemented");
 }
-vector<component*> lens::getChildren(){
+vector<std::shared_ptr<component>> lens::getChildren(){
 	throw logic_error("Not Implemented");
 }
 

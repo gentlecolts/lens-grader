@@ -15,7 +15,7 @@ class component{
 public:
 	virtual controlPts getControls()=0;
 	virtual void setControls(const controlPts& raw)=0;
-	virtual std::vector<component*> getChildren()=0;
+	virtual std::vector<std::shared_ptr<component>> getChildren()=0;
 
 	virtual ray checkRay(ray rin)=0;
 

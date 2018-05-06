@@ -14,7 +14,7 @@ public:
 	//inherited from compoent
 	virtual controlPts getControls() override;
 	virtual void setControls(const controlPts& raw) override;
-	std::vector<component*> getChildren() override;
+	std::vector<std::shared_ptr<component>> getChildren() override;
 
 	ray checkRay(ray rin) override;
 

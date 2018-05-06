@@ -15,7 +15,7 @@ controlPts group::getControls(){
 void group::setControls(const controlPts& raw){
 	throw logic_error("Not Implemented");
 }
-vector<component*> group::getChildren(){
+vector<std::shared_ptr<component>> group::getChildren(){
 	throw logic_error("Not Implemented");
 }
 
