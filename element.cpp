@@ -7,10 +7,10 @@ element::~element(){
 	//dtor
 }
 
-vector<double> element::getRawValues(){
+controlPts element::getControls(){
 	throw logic_error("Not Implemented");
 }
-void element::setRawValues(const vector<double>& raw){
+void element::setControls(const controlPts& raw){
 	throw logic_error("Not Implemented");
 }
 vector<component*> element::getChildren(){

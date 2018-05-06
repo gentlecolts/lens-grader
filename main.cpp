@@ -34,6 +34,8 @@ int main(int argc,char** argv){
 	SDL_Window* win=SDL_CreateWindow("Lens Grader",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,width,height,SDL_WINDOW_SHOWN);
 	//SDL_Surface* surface=SDL_GetWindowSurface(win);
 	SDL_Renderer* r=SDL_CreateRenderer(win,-1,SDL_RENDERER_ACCELERATED);
+	auto pixels=new uint32_t[width*height];
+	pbuffer pix(pixels,width,height);
 
 	SDL_Rect rec;
 	rec.x=10;
@@ -41,7 +43,7 @@ int main(int argc,char** argv){
 	rec.w=160;
 	rec.h=100;
 
-	lens l(vector<double>{.2,.6},100);
+	component* l=new lens(vector<double>{.2,.6},100);
 
 	while(1){
 		//SDL_FillRect(surface,NULL,SDL_MapRGB(surface->format,0xe5,0x5c,0x69));
@@ -53,6 +55,10 @@ int main(int argc,char** argv){
 		SDL_RenderFillRect(r,&rec);
 		SDL_SetRenderDrawColor(r,0,255,0,255);
 		SDL_RenderDrawLine(r,10,10,170,110);
+
+		l->drawTo(pix);
+
+		SDL_UpdateTexture(SDL_GetRenderTarget(r),NULL,pixels,width*sizeof(*pixels));
 
 		SDL_RenderPresent(r);
 		pollEvents();

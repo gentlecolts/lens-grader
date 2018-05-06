@@ -24,8 +24,8 @@ public:
 	group();
 	virtual ~group();
 
-	virtual std::vector<double> getRawValues() override;
-	virtual void setRawValues(const std::vector<double>& raw) override;
+	virtual controlPts getControls() override;
+	virtual void setControls(const controlPts& raw) override;
 	virtual std::vector<component*> getChildren() override;
 
 	virtual ray checkRay(ray rin) override;

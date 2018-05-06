@@ -9,10 +9,10 @@ lens::~lens(){
 	//dtor
 }
 
-vector<double> lens::getRawValues(){
+controlPts lens::getControls(){
 	throw logic_error("Not Implemented");
 }
-void lens::setRawValues(const vector<double>& raw){
+void lens::setControls(const controlPts& raw){
 	throw logic_error("Not Implemented");
 }
 vector<component*> lens::getChildren(){

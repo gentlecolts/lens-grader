@@ -17,3 +17,10 @@ void ray::fromPoints(double x0,double y0,double x1,double y1){
 	dir.x=x1-x0;
 	dir.y=y1-y0;
 }
+
+
+pbuffer::pbuffer():pixels(0),w(0),h(0){}
+pbuffer::pbuffer(uint32_t *buf,int width,int height):pixels(buf),w(width),h(height){}
+
+rect::rect():x(0),y(0),w(0),h(0){}
+rect::rect(double x0,double y0,double width,double height):x(x0),y(y0),w(width),h(height){}

@@ -9,10 +9,10 @@ group::~group(){
 	//dtor
 }
 
-vector<double> group::getRawValues(){
+controlPts group::getControls(){
 	throw logic_error("Not Implemented");
 }
-void group::setRawValues(const vector<double>& raw){
+void group::setControls(const controlPts& raw){
 	throw logic_error("Not Implemented");
 }
 vector<component*> group::getChildren(){

@@ -12,14 +12,13 @@ public:
 	virtual ~lens();
 
 	//inherited from compoent
-	std::vector<double> getRawValues() override;
-	void setRawValues(const std::vector<double>& raw) override;
+	virtual controlPts getControls() override;
+	virtual void setControls(const controlPts& raw) override;
 	std::vector<component*> getChildren() override;
 
 	ray checkRay(ray rin) override;
 
 	void drawTo(pbuffer &pixels,rect &target) override;
-
 };
 
 #endif // LENS_H
