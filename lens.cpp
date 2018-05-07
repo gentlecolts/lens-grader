@@ -24,5 +24,12 @@ ray lens::checkRay(ray rin){
 }
 
 void lens::drawTo(pbuffer &pixels,rect &target){
-	throw logic_error("Not Implemented");
+	const uint32_t color=0xffdacd47;
+
+	//TODO: clip target rect to buffer's size before this loop, in case of bad input
+	for(int j=target.y;j<target.y+target.h;j++){
+		for(int i=target.x;i<target.x+target.w;i++){
+			pixels.pixels[i+pixels.w*j]=color;
+		}
+	}
 }

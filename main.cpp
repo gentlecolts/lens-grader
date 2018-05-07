@@ -34,8 +34,8 @@ int main(int argc,char** argv){
 	SDL_Window* win=SDL_CreateWindow("Lens Grader",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,width,height,SDL_WINDOW_SHOWN);
 	//SDL_Surface* surface=SDL_GetWindowSurface(win);
 	SDL_Renderer* r=SDL_CreateRenderer(win,-1,SDL_RENDERER_ACCELERATED);
-	auto pixels=new uint32_t[width*height];
-	pbuffer pix(pixels,width,height);
+	SDL_Surface* surf=SDL_CreateRGBSurface(0,width,height,32,0x00ff0000,0x0000ff00,0x000000ff,0xff000000);
+	pbuffer pix((uint32_t*)surf->pixels,width,height);
 
 	SDL_Rect rec;
 	rec.x=10;
@@ -49,16 +49,21 @@ int main(int argc,char** argv){
 		//SDL_FillRect(surface,NULL,SDL_MapRGB(surface->format,0xe5,0x5c,0x69));
 		//SDL_FillRect(surface,&rec,0x7f00ff);
 
+		//*
 		SDL_SetRenderDrawColor(r,0xe5,0x5c,0x69,255);
 		SDL_RenderClear(r);
 		SDL_SetRenderDrawColor(r,127,0,255,255);
 		SDL_RenderFillRect(r,&rec);
 		SDL_SetRenderDrawColor(r,0,255,0,255);
 		SDL_RenderDrawLine(r,10,10,170,110);
+		//*/
 
 		l->drawTo(pix);
 
-		SDL_UpdateTexture(SDL_GetRenderTarget(r),NULL,pixels,width*sizeof(*pixels));
+		//SDL_UpdateTexture(SDL_GetRenderTarget(r),NULL,pixels,width*sizeof(*pixels));
+		SDL_Texture* tex=SDL_CreateTextureFromSurface(r,surf);
+		SDL_RenderCopy(r,tex,0,0);
+		SDL_DestroyTexture(tex);
 
 		SDL_RenderPresent(r);
 		pollEvents();
