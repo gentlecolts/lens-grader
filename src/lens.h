@@ -22,7 +22,7 @@ public:
 
 	ray checkRay(ray rin) override;
 
-	void drawTo(pbuffer &pixels,rect target) override;
+	void drawTo(pbuffer &pixels,const rect &target) override;
 
 	//lens specific pieces
 	//virtual double getError();

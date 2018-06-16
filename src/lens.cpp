@@ -24,7 +24,7 @@ ray lens::checkRay(ray rin){
 	throw logic_error("Not Implemented");
 }
 
-void lens::drawTo(pbuffer &pixels,rect target){
+void lens::drawTo(pbuffer &pixels,const rect &target){
 	const uint32_t
 		lenscolor=0xffdacd47,
 		sensorcolor=0xff5caee5;
