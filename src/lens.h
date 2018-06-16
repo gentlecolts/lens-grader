@@ -9,7 +9,7 @@ protected:
 	std::vector<group> groups;
 
 	//distances are in milimieters, aperature is f/a (ex f/2.8 is stored as 2.8)
-	double mountRadius=1,sensorToBack=1,imageCircleRadius=1,aperature=2.8,physicalLength=1,focalLength=1;
+	double mountRadius=17,sensorToBack=46.50,imageCircleRadius=21.6333,physicalLength=100,focalLength=100,aperature=2.8;
 
 public:
 	lens(std::vector<double> groupDivs,double focalLength);
