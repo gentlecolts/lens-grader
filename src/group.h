@@ -2,7 +2,8 @@
 #define GROUP_H
 
 #include "component.h"
-#include "element.h"
+
+class element;
 
 /*group with many elements
 all elements within the group move together, if at all

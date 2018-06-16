@@ -2,7 +2,8 @@
 #define LENS_H
 
 #include "component.h"
-#include "group.h"
+
+class group;
 
 class lens:public component{
 protected:

@@ -1,4 +1,5 @@
 #include "group.h"
+#include "element.h"
 using namespace std;
 
 group::group(){
