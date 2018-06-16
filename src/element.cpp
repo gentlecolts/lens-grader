@@ -22,6 +22,6 @@ ray element::checkRay(ray rin){
 }
 
 //for displaying on-screen
-void element::drawTo(pbuffer &pixels,rect &target){
+void element::drawTo(pbuffer &pixels,rect target){
 	throw logic_error("Not Implemented");
 }

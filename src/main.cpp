@@ -49,7 +49,7 @@ int main(int argc,char** argv){
 		//SDL_FillRect(surface,NULL,SDL_MapRGB(surface->format,0xe5,0x5c,0x69));
 		//SDL_FillRect(surface,&rec,0x7f00ff);
 
-		//*
+		/*
 		SDL_SetRenderDrawColor(r,0xe5,0x5c,0x69,255);
 		SDL_RenderClear(r);
 		SDL_SetRenderDrawColor(r,127,0,255,255);

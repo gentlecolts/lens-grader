@@ -23,7 +23,7 @@ public:
 
 	//shorthand for drawing to full buffer
 	virtual void drawTo(pbuffer &pixels);
-	virtual void drawTo(pbuffer &pixels,rect &target)=0;
+	virtual void drawTo(pbuffer &pixels,rect target)=0;
 };
 
 #endif // COMPONENT_H_INCLUDED

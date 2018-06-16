@@ -17,7 +17,7 @@ public:
 	virtual ray checkRay(ray rin) override;
 
 	//for displaying on-screen
-	virtual void drawTo(pbuffer &pixels,rect &target) override;
+	virtual void drawTo(pbuffer &pixels,rect target) override;
 };
 
 #endif // ELEMENT_H

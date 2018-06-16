@@ -30,7 +30,7 @@ public:
 
 	virtual ray checkRay(ray rin) override;
 
-	virtual void drawTo(pbuffer &pixels,rect &target) override;
+	virtual void drawTo(pbuffer &pixels,rect target) override;
 };
 
 #endif // GROUP_H
