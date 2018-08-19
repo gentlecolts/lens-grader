@@ -11,11 +11,21 @@ struct controlPts{
 	std::vector<std::unique_ptr<controlPts>> children;
 };
 
-class component{
+class component:public std::enable_shared_from_this<component>{
+protected:
+	//this is kept raw intentionally, for a few reasons
+	//1) destroying this should not ever attempt to delete the parent
+	//2) more importantly, to prevent any sort of odd circular ownerships for reference counting
+	//this object will be destroyed when its parent component is anyways
+	//TODO: what if the parent is destroyed while someone else holds a reference to this?
+	component* parent;
+	std::vector<std::shared_ptr<component>> children;
 public:
+	component(component* parentComponent);
+	
 	virtual controlPts getControls()=0;
 	virtual void setControls(const controlPts& raw)=0;
-	virtual std::vector<std::shared_ptr<component>> getChildren()=0;
+	virtual std::vector<std::shared_ptr<component>> getChildren();
 
 	virtual ray checkRay(ray rin)=0;
 

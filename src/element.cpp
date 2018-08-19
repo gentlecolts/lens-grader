@@ -1,6 +1,6 @@
 #include "element.h"
 using namespace std;
-element::element(){
+element::element(group* parent):component(parent){
 	//ctor
 }
 element::~element(){

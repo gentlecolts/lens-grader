@@ -2,11 +2,12 @@
 #define ELEMENT_H
 
 #include "component.h"
+#include "group.h"
 
 //a simple circular lens
 class element:public component{
 public:
-	element();
+	element(group* parent);
 	virtual ~element();
 
 	std::vector<double> frontVals,backVals;

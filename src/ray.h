@@ -3,6 +3,7 @@
 
 #include <cinttypes>
 
+//TODO: use std::valarr instead
 struct point{
 	double x,y;
 	point();

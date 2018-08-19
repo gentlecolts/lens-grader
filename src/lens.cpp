@@ -1,10 +1,36 @@
 #include "lens.h"
 #include "group.h"
 #include <iostream>
+#include <algorithm>
 using namespace std;
 
-lens::lens(std::vector<double> groupDivs,double focalLength):component(){
-	//ctor
+
+lens::lens(int groupCount, double focalLen):component(nullptr),focalLength(focalLen){
+	groupCount=max(groupCount,1);//must have at least one group
+	
+	for(int i=0;i<groupCount;i++){
+		auto g=make_shared<group>(this);
+		g->setFront((double(i+1))/groupCount);
+		g->setBack((double(i))/groupCount);
+		children.push_back(g);
+	}
+	cout<<"made a lens with "<<children.size()<<" children"<<endl;
+}
+
+
+lens::lens(std::vector<double> groupDivs,double focalLen):lens(groupDivs.size()+1,focalLen){
+	//sort the dividers
+	sort(groupDivs.begin(),groupDivs.end());
+	
+	//set each in order
+	for(int i=0;i<children.size();i++){
+		const double
+			back=i?groupDivs[i-1]:0,
+			front=(i==groupDivs.size())?1:groupDivs[i];
+		auto g=dynamic_pointer_cast<group>(children[i]);
+		g->setBack(back);
+		g->setFront(front);
+	}
 }
 
 lens::~lens(){
@@ -84,7 +110,10 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	}
 	
 	//draw each group
-	for(auto& group:groups){
-		//h=group.
+	for(auto groupcomponent:children){
+		auto g=dynamic_pointer_cast<group>(groupcomponent);
+		if(g){
+			g->drawTo(pixels,target);
+		}
 	}
 }
