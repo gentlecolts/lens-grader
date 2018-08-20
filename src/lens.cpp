@@ -30,6 +30,7 @@ lens::lens(std::vector<double> groupDivs,double focalLen):lens(groupDivs.size()+
 		auto g=dynamic_pointer_cast<group>(children[i]);
 		g->setBack(back);
 		g->setFront(front);
+		cout<<"group from "<<back<<" to "<<front<<endl;
 	}
 }
 
@@ -110,10 +111,8 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	}
 	
 	//draw each group
+	//cout<<"drawing groups"<<endl;
 	for(auto groupcomponent:children){
-		auto g=dynamic_pointer_cast<group>(groupcomponent);
-		if(g){
-			g->drawTo(pixels,target);
-		}
+		groupcomponent->drawTo(pixels,lensRec);
 	}
 }

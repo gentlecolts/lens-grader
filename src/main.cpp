@@ -43,8 +43,8 @@ int main(int argc,char** argv){
 	rec.w=160;
 	rec.h=100;
 
-	//component* l=new lens(vector<double>{.2,.6},100);
-	component* l=new lens(2,100);
+	component* l=new lens(vector<double>{.2,.6},100);
+	//component* l=new lens(2,100);
 
 	while(1){
 		//SDL_FillRect(surface,NULL,SDL_MapRGB(surface->format,0xe5,0x5c,0x69));

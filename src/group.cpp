@@ -2,10 +2,14 @@
 #include "element.h"
 #include "lens.h"
 #include <algorithm>
+#include <iostream>
 using namespace std;
 
 group::group(lens* parent):component(parent){
 	//ctor
+	width=0.5;
+	range=0.75;
+	position=0.8;
 }
 
 group::~group(){
@@ -27,7 +31,46 @@ ray group::checkRay(ray rin){
 }
 
 void group::drawTo(pbuffer &pixels,const rect &target){
-	throw logic_error("Not Implemented");
+	//throw logic_error("Not Implemented");
+	const uint32_t
+		bgcol=0xff47da83,
+		bordercol=0xff007a2d,
+		rangecol=0xffe981be;
+	rect myrec=target;
+	myrec.w*=width;
+	myrec.h*=front-back;//
+	myrec.x+=(target.w-myrec.w)/2;//target.center-myrec.w/2 = (target.x+target.w/2)-myrec.w/2 = target.x+(target.w-myrec.w)/2
+	myrec.y+=target.h*(1-front);
+	
+	//cout<<"drawing rect: ("<<myrec.x<<","<<myrec.y<<") "<<myrec.w<<"x"<<myrec.h<<endl;
+	
+	rect region=myrec;
+	region.h*=(1-range);
+	region.y+=(1-position)*(myrec.h*range);
+	
+	const int
+		x0=myrec.x,
+		x1=myrec.x+myrec.w,
+		y0=myrec.y,
+		y1=myrec.y+myrec.h;
+	
+	for(int j=y0;j<y1;j++){
+		for(int i=x0;i<x1;i++){
+			auto col=bgcol;
+			
+			if(i==x0 || i==x1-1 || j==y0 || j==y1-1){
+				col=bordercol;
+			}else if(i>=region.x && i<=region.x+region.w && j>=region.y && j<=region.y+region.h){
+				col=rangecol;
+			}
+			
+			pixels.pixels[i+pixels.w*j]=col;
+		}
+	}
+	
+	for(auto groupcomponent:children){
+		groupcomponent->drawTo(pixels,region);
+	}
 }
 
 //TODO: use c++17 version
@@ -54,7 +97,6 @@ void group::setRange(double r){
 void group::setPosition(double p){
 	position=clamp(p,0.0,1.0);
 }
-
 
 double group::getFront(){
 	return front;

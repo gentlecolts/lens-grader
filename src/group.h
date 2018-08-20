@@ -23,7 +23,7 @@ protected:
 		front=1,back=0,//position of front and back of group, as a percent of the lens's length [0-1]
 		width=1,//width of group, as a percent of the lens's width [0-1]
 		range=0,//range of group motion, as a percent [0-1]
-		position=0;//position along move range, as a percent;
+		position=0;//position along move range, as a percent;//TODO: parameter for inverting movement?
 	/*NOTE: range does not affect the actual front or back.  the wider the move range, the smaller the actual lens space is.
 	the distance between the real front and back could be seen as 1-range.  when the range is 0, the lens elements have the full 0 to 1 range to be placed in, with no movemenet allowed, at 1 the elements would only have a thin area to move in, but could shift along the entire range
 	
