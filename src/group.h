@@ -18,6 +18,9 @@ class group:public component{
 protected:
 	std::vector<std::shared_ptr<element>> elements;
 	
+	virtual rect getFullRect(const rect& parent);
+	virtual rect getRect(const rect& parent);
+	
 	//getters/setters are used to ensure constraint conformance (including resizing adjacent elements)
 	double
 		front=1,back=0,//position of front and back of group, as a percent of the lens's length [0-1]

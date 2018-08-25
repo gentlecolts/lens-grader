@@ -9,7 +9,8 @@ class lens:public component{
 protected:
 	//distances are in milimieters, aperature is f/a (ex f/2.8 is stored as 2.8)
 	double mountRadius=17,sensorToBack=46.50,imageCircleRadius=21.6333,physicalLength=100,focalLength=100,aperature=2.8;
-
+	
+	virtual rect getRect(const rect& parent);
 public:
 	lens(int groupCount,double focalLen);
 	lens(std::vector<double> groupDivs,double focalLen);

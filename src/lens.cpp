@@ -52,24 +52,19 @@ ray lens::checkRay(ray rin){
 	throw logic_error("Not Implemented");
 }
 
-void lens::drawTo(pbuffer &pixels,const rect &target){
-	const uint32_t
-		lenscolor=0xffdacd47,
-		sensorcolor=0xff5caee5;
-	
+rect lens::getRect(const rect& parent){
 	//determine the actual shape of the bounding box
-	//TODO: this finds the right size for the barrel, but needs to include the sensor too
 	const double
-		cx=target.x+target.w/2,
-		cy=target.y+target.h/2,
-		ratio=(physicalLength+sensorToBack)/(physicalLength/aperature);//total length / width
-	double h=target.h,w=h/ratio;
+	cx=parent.x+parent.w/2,
+	cy=parent.y+parent.h/2,
+	ratio=(physicalLength+sensorToBack)/(physicalLength/aperature);//total length / width
+	double h=parent.h,w=h/ratio;
 	
 	//cout<<w<<" "<<h<<endl;
 	
-	if(w>target.w){
-		h=h*target.w/w;
-		w=target.w;
+	if(w>parent.w){
+		h=h*parent.w/w;
+		w=parent.w;
 	}
 	
 	//create new bounds with the correct dimensions
@@ -78,12 +73,18 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	lensRec.h=h*physicalLength/(physicalLength+sensorToBack);
 	lensRec.x=cx-lensRec.w/2;
 	lensRec.y=
-		cy-(target.h-lensRec.h)/2//center of rectangle
+		cy-(parent.h-lensRec.h)/2//center of rectangle
 		-lensRec.h/2;//top of rec
+	return lensRec;
+}
+
+void lens::drawTo(pbuffer &pixels,const rect &target){
+	const uint32_t
+		lenscolor=0xffdacd47,
+		sensorcolor=0xff5caee5;
+	
+	auto lensRec=getRect(target);
 	//cout<<lensRec.w<<" "<<lensRec.h<<" "<<lensRec.x<<" "<<lensRec.y<<endl;
-	
-	rect mountRec;
-	
 	
 	//TODO: clip target rect to buffer's size before this loop, in case of bad input
 	
@@ -99,6 +100,7 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	
 	const int j0=lensRec.y+lensRec.h,j1=target.y+target.h;
 	const double realtopixel=lensRec.w/(physicalLength/aperature);//pixel width of the lens divided by "real" width of the lens, as a conversion ratio point
+	const double cx=target.x+target.w/2;
 	
 	for(int j=j0;j<j1;j++){
 		//how wide should we be

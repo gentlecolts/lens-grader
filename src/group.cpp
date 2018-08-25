@@ -7,8 +7,8 @@ using namespace std;
 
 group::group(lens* parent):component(parent){
 	//ctor
-	width=0.5;
-	range=0.75;
+	width=0.75;
+	range=0.25;
 	position=0.8;
 }
 
@@ -30,23 +30,32 @@ ray group::checkRay(ray rin){
 	throw logic_error("Not Implemented");
 }
 
+rect group::getFullRect(const rect& parent){
+	rect myrec=parent;
+	myrec.w*=width;
+	myrec.h*=front-back;//
+	myrec.x+=(parent.w-myrec.w)/2;//target.center-myrec.w/2 = (target.x+target.w/2)-myrec.w/2 = target.x+(target.w-myrec.w)/2
+	myrec.y+=parent.h*(1-front);
+	return myrec;
+}
+rect group::getRect(const rect& parent){
+	auto region=getFullRect(parent);
+	region.y+=(1-position)*(region.h*range);
+	region.h*=(1-range);
+	return region;
+}
+
+
 void group::drawTo(pbuffer &pixels,const rect &target){
 	//throw logic_error("Not Implemented");
 	const uint32_t
 		bgcol=0xff47da83,
 		bordercol=0xff007a2d,
 		rangecol=0xffe981be;
-	rect myrec=target;
-	myrec.w*=width;
-	myrec.h*=front-back;//
-	myrec.x+=(target.w-myrec.w)/2;//target.center-myrec.w/2 = (target.x+target.w/2)-myrec.w/2 = target.x+(target.w-myrec.w)/2
-	myrec.y+=target.h*(1-front);
-	
+	auto myrec=getFullRect(target);
 	//cout<<"drawing rect: ("<<myrec.x<<","<<myrec.y<<") "<<myrec.w<<"x"<<myrec.h<<endl;
 	
-	rect region=myrec;
-	region.h*=(1-range);
-	region.y+=(1-position)*(myrec.h*range);
+	rect region=getRect(target);
 	
 	const int
 		x0=myrec.x,

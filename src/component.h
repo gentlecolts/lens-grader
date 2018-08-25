@@ -20,6 +20,8 @@ protected:
 	//TODO: what if the parent is destroyed while someone else holds a reference to this?
 	component* parent;
 	std::vector<std::shared_ptr<component>> children;
+	
+	virtual rect getRect(const rect &parent)=0;
 public:
 	component(component* parentComponent);
 	

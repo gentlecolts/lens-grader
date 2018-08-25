@@ -21,6 +21,10 @@ ray element::checkRay(ray rin){
 	throw logic_error("Not Implemented");
 }
 
+rect element::getRect(const rect& parent){
+	throw logic_error("Not Implemented");
+}
+
 //for displaying on-screen
 void element::drawTo(pbuffer &pixels,const rect &target){
 	throw logic_error("Not Implemented");

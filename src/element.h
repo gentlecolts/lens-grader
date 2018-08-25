@@ -6,6 +6,8 @@
 
 //a simple circular lens
 class element:public component{
+protected:
+	virtual rect getRect(const rect& parent);
 public:
 	element(group* parent);
 	virtual ~element();
