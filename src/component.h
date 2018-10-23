@@ -22,6 +22,14 @@ protected:
 	std::vector<std::shared_ptr<component>> children;
 	
 	virtual rect getRect(const rect &parent)=0;
+	
+	template <typename T,class... Args>
+	typename std::enable_if<std::is_base_of<component,T>::value,std::shared_ptr<T>>::type
+	newChildComponent(Args&&... args){
+		auto child=std::make_shared<T>(std::forward<Args>(args)...);
+		children.push_back(child);
+		return child;
+	}
 public:
 	component(component* parentComponent);
 	

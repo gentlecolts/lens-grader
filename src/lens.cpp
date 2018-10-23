@@ -9,10 +9,9 @@ lens::lens(int groupCount, double focalLen):component(nullptr),focalLength(focal
 	groupCount=max(groupCount,1);//must have at least one group
 	
 	for(int i=0;i<groupCount;i++){
-		auto g=make_shared<group>(this);
+		auto g=newChildComponent<group>(this);
 		g->setFront((double(i+1))/groupCount);
 		g->setBack((double(i))/groupCount);
-		children.push_back(g);
 	}
 	cout<<"made a lens with "<<children.size()<<" children"<<endl;
 }
