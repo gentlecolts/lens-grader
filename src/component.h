@@ -35,7 +35,8 @@ public:
 	
 	virtual controlPts getControls()=0;
 	virtual void setControls(const controlPts& raw)=0;
-	virtual std::vector<std::shared_ptr<component>> getChildren();
+	//this returns a copy, so it shoulnt be modified
+	virtual const std::vector<std::shared_ptr<component>> getChildren();
 
 	virtual ray checkRay(ray rin)=0;
 

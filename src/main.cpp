@@ -1,4 +1,6 @@
 #include "lens.h"
+#include "group.h"
+#include "element.h"
 #include <SDL2/SDL.h>
 using namespace std;
 
@@ -42,9 +44,14 @@ int main(int argc,char** argv){
 	rec.y=10;
 	rec.w=160;
 	rec.h=100;
-
+	
+	//this pointer business isnt a requirement, but is used to make future tesing of various classes of lens objects easier
 	component* l=new lens(vector<double>{.2,.6},100);
 	//component* l=new lens(2,100);
+	
+	auto g=dynamic_pointer_cast<group>(l->getChildren()[0]);
+	//auto elm=g->addElement<element>();
+	//elm->frontVals={0.6,0.75,0.6};
 
 	while(1){
 		//SDL_FillRect(surface,NULL,SDL_MapRGB(surface->format,0xe5,0x5c,0x69));

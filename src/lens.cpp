@@ -38,17 +38,14 @@ lens::~lens(){
 }
 
 controlPts lens::getControls(){
-	throw logic_error("Not Implemented");
+	throw logic_error("Not Implemented: "+string(__func__));
 }
 void lens::setControls(const controlPts& raw){
-	throw logic_error("Not Implemented");
-}
-vector<std::shared_ptr<component>> lens::getChildren(){
-	throw logic_error("Not Implemented");
+	throw logic_error("Not Implemented: "+string(__func__));
 }
 
 ray lens::checkRay(ray rin){
-	throw logic_error("Not Implemented");
+	throw logic_error("Not Implemented: "+string(__func__));
 }
 
 rect lens::getRect(const rect& parent){

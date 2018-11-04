@@ -62,7 +62,6 @@ public:
 
 	virtual controlPts getControls() override;
 	virtual void setControls(const controlPts& raw) override;
-	virtual std::vector<std::shared_ptr<component>> getChildren() override;
 
 	virtual ray checkRay(ray rin) override;
 
@@ -79,6 +78,12 @@ public:
 	virtual double getWidth();
 	virtual double getRange();
 	virtual double getPosition();
+	
+	template <typename T,class... Args>
+	typename std::enable_if<std::is_base_of<element,T>::value,std::shared_ptr<T>>::type
+	addElement(){
+		return newChildComponent<T>(this);
+	}
 };
 
 #endif // GROUP_H

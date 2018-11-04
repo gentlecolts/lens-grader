@@ -17,17 +17,14 @@ group::~group(){
 }
 
 controlPts group::getControls(){
-	throw logic_error("Not Implemented");
+	throw logic_error("Not Implemented: "+string(__func__));
 }
 void group::setControls(const controlPts& raw){
-	throw logic_error("Not Implemented");
-}
-vector<std::shared_ptr<component>> group::getChildren(){
-	throw logic_error("Not Implemented");
+	throw logic_error("Not Implemented: "+string(__func__));
 }
 
 ray group::checkRay(ray rin){
-	throw logic_error("Not Implemented");
+	throw logic_error("Not Implemented: "+string(__func__));
 }
 
 rect group::getFullRect(const rect& parent){
@@ -47,7 +44,6 @@ rect group::getRect(const rect& parent){
 
 
 void group::drawTo(pbuffer &pixels,const rect &target){
-	//throw logic_error("Not Implemented");
 	const uint32_t
 		bgcol=0xff47da83,
 		bordercol=0xff007a2d,
