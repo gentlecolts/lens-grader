@@ -4,8 +4,16 @@
 #include "component.h"
 #include "group.h"
 
+struct circle{
+	//NOTE: r is stored as r^2 for convenience
+	double x0,y0,r;
+	bool upper=false;
+};
+
 //a simple circular lens
 class element:public component{
+private:
+	std::tuple<circle,circle> getFrontBack(const rect &target);
 protected:
 	virtual rect getRect(const rect& parent);
 public:

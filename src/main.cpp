@@ -50,8 +50,9 @@ int main(int argc,char** argv){
 	//component* l=new lens(2,100);
 	
 	auto g=dynamic_pointer_cast<group>(l->getChildren()[0]);
-	//auto elm=g->addElement<element>();
-	//elm->frontVals={0.6,0.75,0.6};
+	auto elm=g->addElement<element>();
+	elm->frontVals={.7,.75};
+	elm->backVals={0,.25};
 
 	while(1){
 		//SDL_FillRect(surface,NULL,SDL_MapRGB(surface->format,0xe5,0x5c,0x69));
