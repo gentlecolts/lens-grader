@@ -114,3 +114,12 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 		groupcomponent->drawTo(pixels,lensRec);
 	}
 }
+
+void lens::setPosition(double pos){
+	for(auto child:children){
+		if(auto g=dynamic_pointer_cast<group>(child)){
+			g->setPosition(pos);
+		}
+	}
+}
+

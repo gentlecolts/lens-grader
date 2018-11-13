@@ -26,6 +26,8 @@ public:
 
 	//lens specific pieces
 	//virtual double getError();
+	
+	void setPosition(double pos);
 };
 
 #endif // LENS_H

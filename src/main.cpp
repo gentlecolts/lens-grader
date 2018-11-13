@@ -2,6 +2,7 @@
 #include "group.h"
 #include "element.h"
 #include <SDL2/SDL.h>
+#include <chrono>
 using namespace std;
 
 /*
@@ -53,6 +54,9 @@ int main(int argc,char** argv){
 	auto elm=g->addElement<element>();
 	elm->frontVals={.7,.75};
 	elm->backVals={0,.25};
+	
+	auto startTime = chrono::system_clock::now();
+	const double frequency=4*atan(1.0);
 
 	while(1){
 		//SDL_FillRect(surface,NULL,SDL_MapRGB(surface->format,0xe5,0x5c,0x69));
@@ -65,6 +69,13 @@ int main(int argc,char** argv){
 		SDL_RenderFillRect(r,&rec);
 		SDL_SetRenderDrawColor(r,0,255,0,255);
 		SDL_RenderDrawLine(r,10,10,170,110);
+		//*/
+		
+		//*move over time
+		auto nowTime = chrono::system_clock::now();
+		chrono::duration<double> diff = nowTime-startTime;
+		
+		dynamic_cast<lens*>(l)->setPosition((sin(frequency*diff.count())+1)/2);
 		//*/
 
 		l->drawTo(pix);
