@@ -2,9 +2,17 @@
 #define COMPONENT_H_INCLUDED
 
 #include <vector>
+#include <list>
+#include <algorithm>
 #include <memory>
 #include <stdexcept>
 #include "ray.h"
+
+//TODO: use c++17 version
+template<typename T>
+constexpr const T& clamp(const T& v,const T& lo,const T& hi){
+	return (v<lo)?lo:(hi<v)?hi:v;
+}
 
 struct controlPts{
 	std::vector<double> pts;
@@ -45,6 +53,52 @@ public:
 	//shorthand for drawing to full buffer
 	virtual void drawTo(pbuffer &pixels);
 	virtual void drawTo(pbuffer &pixels,const rect &target)=0;
+	
+	static double minThickness;
+	
+	//searching functions
+	template <typename T>
+	typename std::enable_if<std::is_base_of<component,T>::value,std::shared_ptr<T>>::type
+	findChildOfType(bool deep=false){
+		//while this may save a tiny bit of runtime, it's entirely redundant
+		//if(children.empty()){
+		//	return std::shared_ptr<T>();
+		//}
+		
+		for(auto ptr:children){
+			auto child=std::dynamic_pointer_cast<T>(ptr);
+			if(child){
+				return child;
+			}
+		}
+		
+		if(deep){
+			for(auto ptr:children){
+				auto child=ptr->findChildOfType<T>(true);
+				if(child){
+					return child;
+				}
+			}
+		}
+		
+		return std::shared_ptr<T>();
+	}
+	template <typename T>
+	typename std::enable_if<std::is_base_of<component,T>::value,std::list<std::shared_ptr<T>>>::type
+	findChildrenOfType(bool deep=false){
+		std::list<std::shared_ptr<T>> items;
+		std::copy_if(children.begin(),children.end(),std::back_inserter(items),[](auto ptr)->bool{
+			return std::dynamic_pointer_cast<T>(ptr);
+		});
+		
+		if(deep){
+			for(auto ptr:children){
+				items.splice(items.end(),ptr->findChildrenOfType<T>(deep));
+			}
+		}
+		
+		return items;
+	}
 };
 
 #endif // COMPONENT_H_INCLUDED

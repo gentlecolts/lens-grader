@@ -131,3 +131,46 @@ void element::drawTo(pbuffer &pixels,const rect &target){
 		}
 	}
 }
+
+void element::setSphereBack(double centerPos, double edgePos){
+	frontVals={centerPos,edgePos};
+	//validate();
+}
+void element::setSphereFront(double centerPos, double edgePos){
+	backVals={centerPos,edgePos};
+	//validate();
+}
+void element::setSphereFrontBack(double frontCenter, double frontEdge, double backCenter, double backEdge){
+	frontVals={frontCenter,frontEdge};
+	backVals={backCenter,backEdge};
+	//validate();
+}
+void element::validate(){
+	//TODO: this function isnt really runtime ready, but it can work in a pinch
+	for(auto front=frontVals.begin(),back=backVals.begin(); front != frontVals.end() && back != backVals.end(); ++front, ++back){
+		//0=back, 1=front
+		
+		//cannot be in front of the front
+		if(*front<*back){
+			iter_swap(front,back);
+		}
+		
+		//TODO: enforce minimum thickness?
+		//TODO: what do we do if min thickness pushes our lens outside of the 0-1 range?
+		//cannot be thinner than the min thickness, but also may not be outside the 0-1 range
+		
+		//no values are permitted to be outside of the 0-1 range
+		*front=clamp(*front,0.0,1.0);
+		*back=clamp(*back,0.0,1.0);
+	}
+}
+
+bool element::isValid(){
+	for(auto front=frontVals.begin(),back=backVals.begin(); front != frontVals.end() && back != backVals.end(); ++front, ++back){
+		if(*front<*back+minThickness || *front>1 || *front<0 || *back>1 || *back<0){
+			return false;
+		}
+	}
+	return true;
+}
+

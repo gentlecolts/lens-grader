@@ -52,8 +52,8 @@ int main(int argc,char** argv){
 	
 	auto g=dynamic_pointer_cast<group>(l->getChildren()[0]);
 	auto elm=g->addElement<element>();
-	elm->frontVals={.7,.75};
-	elm->backVals={0,.25};
+	elm->setSphereFront(.7,.75);
+	elm->setSphereBack(0,.25);
 	
 	auto startTime = chrono::system_clock::now();
 	const double frequency=4*atan(1.0);

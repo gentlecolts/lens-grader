@@ -16,11 +16,14 @@ private:
 	std::tuple<circle,circle> getFrontBack(const rect &target);
 protected:
 	virtual rect getRect(const rect& parent);
+	
+	std::vector<double> frontVals,backVals;
+	
+	virtual void validate();
 public:
 	element(group* parent);
 	virtual ~element();
 
-	std::vector<double> frontVals,backVals;
 	virtual controlPts getControls() override;
 	virtual void setControls(const controlPts& raw) override;
 
@@ -28,6 +31,16 @@ public:
 
 	//for displaying on-screen
 	virtual void drawTo(pbuffer &pixels,const rect &target) override;
+	
+	//virtual void setFrontValues(const std::vector<double>& vals);
+	//virtual void setBackValues(const std::vector<double>& vals);
+	
+	void setSphereFront(double centerPos,double edgePos);
+	void setSphereBack(double centerPos,double edgePos);
+	void setSphereFrontBack(double frontCenter,double frontEdge,double backCenter,double backEdge);
+	
+	//TODO: should this be a compontent function instead?  can a group non-trivially invalid?
+	virtual bool isValid();
 };
 
 #endif // ELEMENT_H

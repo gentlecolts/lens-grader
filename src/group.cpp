@@ -78,12 +78,6 @@ void group::drawTo(pbuffer &pixels,const rect &target){
 	}
 }
 
-//TODO: use c++17 version
-template<typename T>
-constexpr const T& clamp(const T& v,const T& lo,const T& hi){
-	return (v<lo)?lo:(hi<v)?hi:v;
-}
-
 void group::setFront(double f){
 	front=clamp(f,0.0,1.0);
 	reevaluateDims();

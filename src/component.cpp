@@ -1,6 +1,8 @@
 #include "component.h"
 using namespace std;
 
+double component::minThickness=0;
+
 component::component(component* parentComponent):parent(parentComponent){
 	/*NOTE:that this does not work, there must be at least one shared pointer to this prior to shared_from_this being called, which cannot happen by the constructor
 	just use newChildComponent
