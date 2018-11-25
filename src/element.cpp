@@ -94,7 +94,6 @@ tuple< circle, circle > element::getFrontBack(const rect &myrec){
 	return tuple<circle,circle>{circle1,circle2};
 }
 
-
 //for displaying on-screen
 void element::drawTo(pbuffer &pixels,const rect &target){
 	const uint32_t
@@ -131,15 +130,15 @@ void element::drawTo(pbuffer &pixels,const rect &target){
 		}
 	}
 	
-	printf("finished element drawto (%f, %f, %f, %f) in rect (%f, %f, %f, %f)\n",frontVals[0],frontVals[1],backVals[0],backVals[1],myrec.x,myrec.y,myrec.w,myrec.h);
+	//printf("finished element drawto (%f, %f, %f, %f) in rect (%f, %f, %f, %f)\n",frontVals[0],frontVals[1],backVals[0],backVals[1],myrec.x,myrec.y,myrec.w,myrec.h);
 }
 
 void element::setSphereBack(double centerPos, double edgePos){
-	frontVals={centerPos,edgePos};
+	backVals={centerPos,edgePos};
 	//validate();
 }
 void element::setSphereFront(double centerPos, double edgePos){
-	backVals={centerPos,edgePos};
+	frontVals={centerPos,edgePos};
 	//validate();
 }
 void element::setSphereFrontBack(double frontCenter, double frontEdge, double backCenter, double backEdge){
