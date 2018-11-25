@@ -46,7 +46,9 @@ public:
 	//this returns a copy, so it shoulnt be modified
 	virtual const std::vector<std::shared_ptr<component>> getChildren();
 
-	virtual ray checkRay(ray rin)=0;
+	//it's a bit of a minor pain to have to re-write iteration with each overload, but at this time i believe the gains of inlining will make it worth it
+	//virtual ray checkRay(ray rin)=0;
+	virtual std::vector<ray> checkRays(const std::vector<ray>& rin)=0;
 
 	//for displaying on-screen
 

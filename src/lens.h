@@ -11,6 +11,7 @@ protected:
 	double mountRadius=17,sensorToBack=46.50,imageCircleRadius=21.6333,physicalLength=100,focalLength=100,aperature=2.8;
 	
 	virtual rect getRect(const rect& parent);
+	
 public:
 	lens(int groupCount,double focalLen);
 	lens(std::vector<double> groupDivs,double focalLen);
@@ -20,14 +21,17 @@ public:
 	virtual controlPts getControls() override;
 	virtual void setControls(const controlPts& raw) override;
 
-	ray checkRay(ray rin) override;
+	std::vector<ray> checkRays(const std::vector<ray>& rin) override;
 
+	using component::drawTo;
 	void drawTo(pbuffer &pixels,const rect &target) override;
 
 	//lens specific pieces
-	//virtual double getError();
-	
 	void setPosition(double pos);
+	virtual double getScore();
+	virtual std::shared_ptr<group> getFrontGroup();
+	virtual std::shared_ptr<group> getBackGroup();
+	virtual const std::vector<std::shared_ptr<group>> getGroups();
 };
 
 #endif // LENS_H

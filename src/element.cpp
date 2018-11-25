@@ -16,7 +16,7 @@ void element::setControls(const controlPts& raw){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
 
-ray element::checkRay(ray rin){
+vector<ray> element::checkRays(const vector<ray>& rin){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
 
@@ -130,6 +130,8 @@ void element::drawTo(pbuffer &pixels,const rect &target){
 			}
 		}
 	}
+	
+	printf("finished element drawto (%f, %f, %f, %f) in rect (%f, %f, %f, %f)\n",frontVals[0],frontVals[1],backVals[0],backVals[1],myrec.x,myrec.y,myrec.w,myrec.h);
 }
 
 void element::setSphereBack(double centerPos, double edgePos){

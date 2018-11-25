@@ -47,10 +47,11 @@ int main(int argc,char** argv){
 	rec.h=100;
 	
 	//this pointer business isnt a requirement, but is used to make future tesing of various classes of lens objects easier
-	component* l=new lens(vector<double>{.2,.6},100);
+	lens* l=new lens(vector<double>{.2,.6},100);
 	//component* l=new lens(2,100);
 	
 	auto g=dynamic_pointer_cast<group>(l->getChildren()[0]);
+	//auto g=l->getBackGroup();
 	auto elm=g->addElement<element>();
 	elm->setSphereFront(.7,.75);
 	elm->setSphereBack(0,.25);

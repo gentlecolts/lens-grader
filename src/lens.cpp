@@ -44,7 +44,7 @@ void lens::setControls(const controlPts& raw){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
 
-ray lens::checkRay(ray rin){
+vector<ray> lens::checkRays(const vector<ray>& rin){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
 
@@ -123,3 +123,21 @@ void lens::setPosition(double pos){
 	}
 }
 
+shared_ptr<group> lens::getBackGroup(){
+	//children[0] is back
+	return dynamic_pointer_cast<group>(children.front());
+}
+shared_ptr<group> lens::getFrontGroup(){
+	return dynamic_pointer_cast<group>(children.back());
+}
+const vector<shared_ptr<group>> lens::getGroups(){
+	vector<shared_ptr<group>> groups(children.size());
+	std::transform(children.begin(),children.end(),groups.begin(),[](auto ptr){
+		return dynamic_pointer_cast<group>(ptr);
+	});
+	
+	return groups;
+}
+
+double lens::getScore(){
+}

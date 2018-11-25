@@ -23,7 +23,7 @@ void group::setControls(const controlPts& raw){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
 
-ray group::checkRay(ray rin){
+vector<ray> group::checkRays(const vector<ray>& rin){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
 

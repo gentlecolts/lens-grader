@@ -63,7 +63,7 @@ public:
 	virtual controlPts getControls() override;
 	virtual void setControls(const controlPts& raw) override;
 
-	virtual ray checkRay(ray rin) override;
+	virtual std::vector<ray> checkRays(const std::vector<ray>& rin) override;
 
 	virtual void drawTo(pbuffer &pixels,const rect &target) override;
 	
