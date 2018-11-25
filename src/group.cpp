@@ -7,7 +7,7 @@ using namespace std;
 
 group::group(lens* parent):component(parent){
 	//ctor
-	width=0.75;
+	//width=0.75;
 	range=0.25;
 	position=0.8;
 }
@@ -37,7 +37,8 @@ rect group::getFullRect(const rect& parent){
 }
 rect group::getRect(const rect& parent){
 	auto region=getFullRect(parent);
-	region.y+=(1-position)*(region.h*range);
+	auto truePosition=0.5+(position-0.5)*(2*movementMultiplier-1);
+	region.y+=(1-truePosition)*(region.h*range);
 	region.h*=(1-range);
 	return region;
 }
@@ -96,6 +97,9 @@ void group::setRange(double r){
 void group::setPosition(double p){
 	position=clamp(p,0.0,1.0);
 }
+void group::setMovementMultiplier(double m){
+	movementMultiplier=clamp(m,0.0,1.0);
+}
 
 double group::getFront(){
 	return front;
@@ -112,6 +116,11 @@ double group::getRange(){
 double group::getPosition(){
 	return position;
 }
+double group::getMovementMultiplier(){
+	return movementMultiplier;
+}
+
 
 void group::reevaluateDims(){
+	//TODO: the group has just been modified, if it's now overlapping any other groups, we need to adjust those groups appropriately
 }

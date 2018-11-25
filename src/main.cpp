@@ -50,11 +50,16 @@ int main(int argc,char** argv){
 	lens* l=new lens(vector<double>{.2,.6},100);
 	//component* l=new lens(2,100);
 	
-	auto g=dynamic_pointer_cast<group>(l->getChildren()[0]);
-	//auto g=l->getBackGroup();
+	//auto g=dynamic_pointer_cast<group>(l->getChildren()[0]);
+	auto g=l->getFrontGroup();
 	auto elm=g->addElement<element>();
-	elm->setSphereFront(.7,.75);
+	elm->setSphereFront(.75,.7);
 	elm->setSphereBack(0,.25);
+	
+	l->getGroups()[0]->setMovementMultiplier(0);
+	l->getGroups()[1]->setMovementMultiplier(0.5);
+	l->getGroups()[2]->setMovementMultiplier(1);
+	
 	
 	auto startTime = chrono::system_clock::now();
 	const double frequency=4*atan(1.0);

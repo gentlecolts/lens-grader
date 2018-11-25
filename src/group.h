@@ -26,7 +26,8 @@ protected:
 		front=1,back=0,//position of front and back of group, as a percent of the lens's length [0-1]
 		width=1,//width of group, as a percent of the lens's width [0-1]
 		range=0,//range of group motion, as a percent [0-1]
-		position=0;//position along move range, as a percent;//TODO: parameter for inverting movement?
+		position=0,//position along move range, as a percent;//TODO: parameter for inverting movement?
+		movementMultiplier=1;//a value of 1 is normal movemnt, 0.5 is no movement, and 0 flips the movement direction, values inbetween are valid and will result in a more restricted movement range
 	/*NOTE: range does not affect the actual front or back.  the wider the move range, the smaller the actual lens space is.
 	the distance between the real front and back could be seen as 1-range.  when the range is 0, the lens elements have the full 0 to 1 range to be placed in, with no movemenet allowed, at 1 the elements would only have a thin area to move in, but could shift along the entire range
 	
@@ -72,12 +73,14 @@ public:
 	virtual void setWidth(double w);
 	virtual void setRange(double r);
 	virtual void setPosition(double p);
+	virtual void setMovementMultiplier(double m);
 	
 	virtual double getFront();
 	virtual double getBack();
 	virtual double getWidth();
 	virtual double getRange();
 	virtual double getPosition();
+	virtual double getMovementMultiplier();
 	
 	template <typename T,class... Args>
 	typename std::enable_if<std::is_base_of<element,T>::value,std::shared_ptr<T>>::type
