@@ -37,6 +37,11 @@ lens::~lens(){
 	//dtor
 }
 
+vector< rayPath > lens::initializeRays(double distanceFromFront, int initialCount){
+	throw logic_error("Not Implemented: "+string(__func__));
+}
+
+
 controlPts lens::getControls(){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
@@ -44,7 +49,7 @@ void lens::setControls(const controlPts& raw){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
 
-vector<ray> lens::checkRays(const vector<ray>& rin){
+void lens::bounceRays(vector< rayPath >& paths){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
 
@@ -113,6 +118,9 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	for(auto groupcomponent:children){
 		groupcomponent->drawTo(pixels,lensRec);
 	}
+	
+	//display rays
+	
 }
 
 void lens::setPosition(double pos){
@@ -140,4 +148,5 @@ const vector<shared_ptr<group>> lens::getGroups(){
 }
 
 double lens::getScore(){
+	throw logic_error("Not Implemented: "+string(__func__));
 }

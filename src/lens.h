@@ -12,6 +12,8 @@ protected:
 	
 	virtual rect getRect(const rect& parent);
 	
+	virtual std::vector<rayPath> initializeRays(double distanceFromFront,int initialCount);
+	
 public:
 	lens(int groupCount,double focalLen);
 	lens(std::vector<double> groupDivs,double focalLen);
@@ -21,7 +23,7 @@ public:
 	virtual controlPts getControls() override;
 	virtual void setControls(const controlPts& raw) override;
 
-	std::vector<ray> checkRays(const std::vector<ray>& rin) override;
+	void bounceRays(std::vector<rayPath>& paths) override;
 
 	using component::drawTo;
 	void drawTo(pbuffer &pixels,const rect &target) override;

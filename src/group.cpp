@@ -23,9 +23,10 @@ void group::setControls(const controlPts& raw){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
 
-vector<ray> group::checkRays(const vector<ray>& rin){
+void group::bounceRays(vector< rayPath >& paths){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
+
 
 rect group::getFullRect(const rect& parent){
 	rect myrec=parent;

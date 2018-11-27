@@ -48,7 +48,8 @@ public:
 
 	//it's a bit of a minor pain to have to re-write iteration with each overload, but at this time i believe the gains of inlining will make it worth it
 	//virtual ray checkRay(ray rin)=0;
-	virtual std::vector<ray> checkRays(const std::vector<ray>& rin)=0;
+	//virtual std::vector<ray> checkRays(const std::vector<ray>& rin)=0;
+	virtual void bounceRays(std::vector<rayPath>& paths)=0;
 
 	//for displaying on-screen
 

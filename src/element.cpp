@@ -16,9 +16,10 @@ void element::setControls(const controlPts& raw){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
 
-vector<ray> element::checkRays(const vector<ray>& rin){
+void element::bounceRays(vector< rayPath >& paths){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
+
 
 rect element::getRect(const rect& parent){
 	//1 = front, 0 = back

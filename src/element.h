@@ -27,7 +27,7 @@ public:
 	virtual controlPts getControls() override;
 	virtual void setControls(const controlPts& raw) override;
 
-	virtual std::vector<ray> checkRays(const std::vector<ray>& rin) override;
+	virtual void bounceRays(std::vector<rayPath>& paths) override;
 
 	//for displaying on-screen
 	virtual void drawTo(pbuffer &pixels,const rect &target) override;
