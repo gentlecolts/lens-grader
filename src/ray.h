@@ -31,6 +31,7 @@ struct ray{
 
 struct rayPath{
 	std::vector<ray> segments;
+	point target;
 	void refract(const ray& normal);
 };
 

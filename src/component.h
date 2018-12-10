@@ -29,7 +29,7 @@ protected:
 	component* parent;
 	std::vector<std::shared_ptr<component>> children;
 	
-	virtual rect getRect(const rect &parent)=0;
+	virtual rect getRect(const rect &parent) const=0;
 	
 	template <typename T,class... Args>
 	typename std::enable_if<std::is_base_of<component,T>::value,std::shared_ptr<T>>::type
@@ -45,6 +45,7 @@ public:
 	virtual void setControls(const controlPts& raw)=0;
 	//this returns a copy, so it shoulnt be modified
 	virtual const std::vector<std::shared_ptr<component>> getChildren();
+	virtual rect getRealSize() const=0;
 
 	//it's a bit of a minor pain to have to re-write iteration with each overload, but at this time i believe the gains of inlining will make it worth it
 	//virtual ray checkRay(ray rin)=0;

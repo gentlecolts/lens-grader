@@ -2,6 +2,7 @@
 #include "group.h"
 #include <iostream>
 #include <algorithm>
+#include <limits>
 using namespace std;
 
 
@@ -38,9 +39,12 @@ lens::~lens(){
 }
 
 vector< rayPath > lens::initializeRays(double distanceFromFront, int initialCount){
-	throw logic_error("Not Implemented: "+string(__func__));
+	//The rays produced by this funciton are in real world coordinates, where (0,0) is the center of the image sensor
+	
+	if(isfinite(distanceFromFront)){
+	}else{
+	}
 }
-
 
 controlPts lens::getControls(){
 	throw logic_error("Not Implemented: "+string(__func__));
@@ -53,7 +57,7 @@ void lens::bounceRays(vector< rayPath >& paths){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
 
-rect lens::getRect(const rect& parent){
+rect lens::getRect(const rect& parent) const{
 	//determine the actual shape of the bounding box
 	const double
 	cx=parent.x+parent.w/2,
@@ -78,6 +82,11 @@ rect lens::getRect(const rect& parent){
 		-lensRec.h/2;//top of rec
 	return lensRec;
 }
+rect lens::getRealSize() const{
+	const auto width=physicalLength/aperature;
+	return rect(-width/2,0,width,physicalLength);
+}
+
 
 void lens::drawTo(pbuffer &pixels,const rect &target){
 	const uint32_t
@@ -120,7 +129,19 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	}
 	
 	//display rays
+	auto rays=initializeRays(numeric_limits<double>::infinity(),10);
+	//bounceRays(rays);
 	
+	//draw just the initial segment
+	const auto halfwidth=physicalLength/(2*aperature);
+	const auto pointRemap=[&](const point& p){
+		//first convert the input point from real-world coordinates into into the coordinate space such that x=[-1,1], y=[0,1]
+		//then convert it to the display surface space
+		return point(lensRec.x+((p.x/halfwidth)+1)*lensRec.w/2,lensRec.y+(p.y/physicalLength)*lensRec.h);
+	};
+	for(auto& ray:rays){
+		pixels.drawLinePixels(pointRemap(ray.segments[0].p),pointRemap(ray.target));
+	}
 }
 
 void lens::setPosition(double pos){
@@ -148,5 +169,9 @@ const vector<shared_ptr<group>> lens::getGroups(){
 }
 
 double lens::getScore(){
-	throw logic_error("Not Implemented: "+string(__func__));
+	auto rays=initializeRays(numeric_limits<double>::infinity(),10);
+	bounceRays(rays);
+	
+	//TODO: Evaluate result
+	return 0;
 }

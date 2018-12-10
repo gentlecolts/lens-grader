@@ -28,7 +28,7 @@ void group::bounceRays(vector< rayPath >& paths){
 }
 
 
-rect group::getFullRect(const rect& parent){
+rect group::getFullRect(const rect& parent) const{
 	rect myrec=parent;
 	myrec.w*=width;
 	myrec.h*=front-back;//
@@ -36,12 +36,15 @@ rect group::getFullRect(const rect& parent){
 	myrec.y+=parent.h*(1-front);
 	return myrec;
 }
-rect group::getRect(const rect& parent){
+rect group::getRect(const rect& parent) const{
 	auto region=getFullRect(parent);
 	auto truePosition=0.5+(position-0.5)*(2*movementMultiplier-1);
 	region.y+=(1-truePosition)*(region.h*range);
 	region.h*=(1-range);
 	return region;
+}
+rect group::getRealSize() const{
+	return getRect(parent->getRealSize());
 }
 
 

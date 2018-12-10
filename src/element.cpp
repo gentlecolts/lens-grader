@@ -21,7 +21,7 @@ void element::bounceRays(vector< rayPath >& paths){
 }
 
 
-rect element::getRect(const rect& parent){
+rect element::getRect(const rect& parent) const{
 	//1 = front, 0 = back
 	const auto
 		frontVal=*max_element(begin(frontVals),end(frontVals)),
@@ -37,6 +37,10 @@ rect element::getRect(const rect& parent){
 		y1=parent.y+(1-backVal)*parent.h;
 	return rect(x0,y0,x1-x0,y1-y0);
 }
+rect element::getRealSize() const{
+	return getRect(parent->getRealSize());
+}
+
 
 tuple< circle, circle > element::getFrontBack(const rect &myrec){
 	/*(x-x0)^2+(y-y0)^2=r^2

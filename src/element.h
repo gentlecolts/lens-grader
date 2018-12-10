@@ -15,7 +15,7 @@ class element:public component{
 private:
 	std::tuple<circle,circle> getFrontBack(const rect &target);
 protected:
-	virtual rect getRect(const rect& parent);
+	virtual rect getRect(const rect& parent) const override;
 	
 	std::vector<double> frontVals,backVals;
 	
@@ -26,6 +26,7 @@ public:
 
 	virtual controlPts getControls() override;
 	virtual void setControls(const controlPts& raw) override;
+	virtual rect getRealSize() const override;
 
 	virtual void bounceRays(std::vector<rayPath>& paths) override;
 
