@@ -45,7 +45,7 @@ public:
 	virtual void setControls(const controlPts& raw)=0;
 	//this returns a copy, so it shoulnt be modified
 	virtual const std::vector<std::shared_ptr<component>> getChildren();
-	virtual rect getRealSize() const=0;
+	virtual rect getRealSize() const=0;//real-coordinate bounding box in milimiters, (0,0) is the center of the image sensor
 
 	//it's a bit of a minor pain to have to re-write iteration with each overload, but at this time i believe the gains of inlining will make it worth it
 	//virtual ray checkRay(ray rin)=0;

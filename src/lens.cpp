@@ -39,7 +39,7 @@ lens::~lens(){
 }
 
 vector< rayPath > lens::initializeRays(double distanceFromFront, int initialCount){
-	//The rays produced by this funciton are in real world coordinates, where (0,0) is the center of the image sensor
+	//The rays produced by this funciton are in real world coordinates (mm), where (0,0) is the center of the image sensor
 	
 	if(isfinite(distanceFromFront)){
 	}else{
@@ -98,6 +98,9 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	
 	//TODO: clip target rect to buffer's size before this loop, in case of bad input
 	
+	//TODO: this does not quite correctly handle cases where the target rect is sufficiently vertical and the sensor is wider than the lens
+	//solution: less hacky calculation of the lens and sensor bounding boxes early on, base calculations off of those
+	
 	//draw lens area
 	for(int j=lensRec.y;j<(int)(lensRec.y+lensRec.h);j++){
 		for(int i=lensRec.x;i<(int)(lensRec.x+lensRec.w);i++){
@@ -108,7 +111,7 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	//draw sensor area
 	//this is a bit more interesting, a trapezoid with the top being the mount radius and the bottom being the image circle
 	
-	const int j0=lensRec.y+lensRec.h,j1=target.y+target.h;
+	const int j0=lensRec.y+lensRec.h,j1=j0+(lensRec.h*sensorToBack)/focalLength;//j1=target.y+target.h;
 	const double realtopixel=lensRec.w/(physicalLength/aperature);//pixel width of the lens divided by "real" width of the lens, as a conversion ratio point
 	const double cx=target.x+target.w/2;
 	
@@ -129,19 +132,28 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	}
 	
 	//display rays
-	auto rays=initializeRays(numeric_limits<double>::infinity(),10);
+	//auto rays=initializeRays(numeric_limits<double>::infinity(),10);
 	//bounceRays(rays);
 	
 	//draw just the initial segment
-	const auto halfwidth=physicalLength/(2*aperature);
+	//const auto halfwidth=physicalLength/(2*aperature);
+	const auto
+		pixelWidth=lensRec.w*imageCircleRadius/(physicalLength/(2*aperature)),
+		circlePixelX=lensRec.x+lensRec.w/2-pixelWidth/2,
+		pixelHeight=lensRec.h*(1+sensorToBack/focalLength);
 	const auto pointRemap=[&](const point& p){
 		//first convert the input point from real-world coordinates into into the coordinate space such that x=[-1,1], y=[0,1]
-		//then convert it to the display surface space
-		return point(lensRec.x+((p.x/halfwidth)+1)*lensRec.w/2,lensRec.y+(p.y/physicalLength)*lensRec.h);
+		//noting that x spans the image circle's width and y is from the sensor to the front of the camera
+		//then convert it to the display surface space (noting that (0,0) is top-left)
+		return point(circlePixelX+pixelWidth*((p.x/imageCircleRadius)+1)/2,lensRec.y+pixelHeight*(1-p.y/(physicalLength+sensorToBack)));
 	};
+	
+	auto p0=pointRemap(point(-physicalLength/(2*aperature),physicalLength+sensorToBack)),p1=pointRemap(point(imageCircleRadius,0));
+	pixels.drawLinePixels(p0,p1);/*
 	for(auto& ray:rays){
 		pixels.drawLinePixels(pointRemap(ray.segments[0].p),pointRemap(ray.target));
 	}
+	//*/
 }
 
 void lens::setPosition(double pos){

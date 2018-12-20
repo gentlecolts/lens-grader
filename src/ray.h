@@ -42,11 +42,11 @@ struct pbuffer{
 	pbuffer(uint32_t *buf,int width,int height);
 	
 	//assuming points are in pixel coordinates, origin at top-left
-	void drawLinePixels(const double x0,const double y0,const double x1,const double y1,uint32_t color=0x000000);
-	void drawLinePixels(const point& p0,const point& p1,uint32_t color=0x000000);
+	void drawLinePixels(const double x0,const double y0,const double x1,const double y1,uint32_t color=0xff000000);
+	void drawLinePixels(const point& p0,const point& p1,uint32_t color=0xff000000);
 	//assuming points are 0.0-1.0, origin at bottom-left
-	void drawLineNormalized(const double x0,const double y0,const double x1,const double y1,uint32_t color=0x000000);
-	void drawLineNormalized(const point& p0,const point& p1,uint32_t color=0x000000);
+	void drawLineNormalized(const double x0,const double y0,const double x1,const double y1,uint32_t color=0xff000000);
+	void drawLineNormalized(const point& p0,const point& p1,uint32_t color=0xff000000);
 };
 
 struct rect{

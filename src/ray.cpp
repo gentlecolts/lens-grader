@@ -43,8 +43,9 @@ void pbuffer::drawLinePixels(const double x0, const double y0, const double x1, 
 	for(int i=0;i<=n;i++){
 		//TODO: do proper clipping and account for n=0
 		const int x=x0+(i*dx)/n,y=y0+(i*dy)/n;
+		//printf("drawing pixel at %i %i\n",x,y);
 		if(x>=0 && x<w && y>=0 && y<h){
-			pixels[x+w*h]=color;
+			pixels[x+w*y]=color;
 		}
 	}
 }
