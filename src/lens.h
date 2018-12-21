@@ -13,7 +13,7 @@ protected:
 	virtual rect getRect(const rect& parent) const override;
 	
 	//TODO: display ray count/simulation ray count should both be attributes of this class
-	virtual std::vector<rayPath> initializeRays(double distanceFromFront,int initialCount);
+	virtual std::vector<rayPath> initializeRays(double distanceFromFront,int resolution,int samples);
 	
 public:
 	lens(int groupCount,double focalLen);

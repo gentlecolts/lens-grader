@@ -38,12 +38,67 @@ lens::~lens(){
 	//dtor
 }
 
-vector< rayPath > lens::initializeRays(double distanceFromFront, int initialCount){
+vector< rayPath > lens::initializeRays(double distanceFromFront, int resolution,int samples){
 	//The rays produced by this funciton are in real world coordinates (mm), where (0,0) is the center of the image sensor
 	
-	if(isfinite(distanceFromFront)){
-	}else{
+	vector<rayPath> rays;
+	
+	//TODO: is this  the correct behavior?  alternative: just use min and continue with min vals if invalid values are given
+	if(resolution<2 || samples<1){
+		return rays;
 	}
+	//negative distance would mean focusing on something inside the lens itself, we dont care to allow for that, even if might be technically possible
+	distanceFromFront=max(distanceFromFront,0.0);
+	
+	const bool finite=isfinite(distanceFromFront);
+	const double
+		lensFront=sensorToBack+physicalLength,
+		sampleY=finite?lensFront+distanceFromFront:focalLength*2,//if infinite, use an arbitrary sample point instead of actually being infinitely far away
+		xmax=-(sampleY-focalLength)*imageCircleRadius/focalLength,
+		lensHalfWidth=physicalLength/(2*aperature);
+	const int sampleN=max(samples-1,1);
+	const point focal(0,focalLength);
+	
+	for(int i=0;i<resolution;i++){
+		const point p0(xmax*i/(resolution-1),sampleY);
+		for(int j=0;j<samples;j++){
+			//if only one sample, just cast straight through the focal point
+			//otherwise, distribute the samples across the entire surface of the lens's front
+			const point p1=(samples==1)?focal:point(lensHalfWidth*((2.0*j)/(samples-1)-1),lensFront);
+			const ray lightray=ray().fromPoints(p0,p1);
+			
+			double targetX;
+			if(finite){
+				//finite case is easy, since we're just mapping the focal plane onto the sensor but flipped
+				targetX=-imageCircleRadius*p0.x/abs(xmax);
+			}else{
+				//when at infinity, the start position doesnt actually matter, only the angle affects the end position
+				//if you need to prove this to yourself, consider a finite sized object that is infinitely far away
+				//no matter how big it is, you will only see it as a single point, due to perspective
+				
+				//thusly, the target x is when y=0 for the ray starting at the focal point, with a direction of the incoming ray's direction
+				//it is assumed that dy will never equal zero
+				//(y-y0)/dy = (x-x0)/dx
+				//-y0*dx/dy+x0=x
+				targetX=focal.x-focal.y*lightray.dir.x/lightray.dir.y;
+			}
+			
+			//TODO: as of c++17, emplace_back returns a reference, could use that for instantiation instead
+			rayPath path;
+			path.segments.push_back(lightray);
+			path.target=point(targetX,0);
+			
+			//since the at-infinity sampling method can produce rays that should not be able to reach the sensor, we need to reject those
+			//TODO: that rejection should be handled by the evaluator, ie there should be some "rejected" state for the rayPath's target
+			if(abs(targetX)<=imageCircleRadius){
+				rays.push_back(path);
+			}
+		}
+		
+		//TODO: add bokeh samples too
+	}
+	
+	return rays;
 }
 
 controlPts lens::getControls(){
@@ -132,7 +187,8 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	}
 	
 	//display rays
-	//auto rays=initializeRays(numeric_limits<double>::infinity(),10);
+	auto rays=initializeRays(numeric_limits<double>::infinity(),4,3);
+	//auto rays=initializeRays(100,4,3);
 	//bounceRays(rays);
 	
 	//draw just the initial segment
@@ -148,8 +204,10 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 		return point(circlePixelX+pixelWidth*((p.x/imageCircleRadius)+1)/2,lensRec.y+pixelHeight*(1-p.y/(physicalLength+sensorToBack)));
 	};
 	
-	auto p0=pointRemap(point(-physicalLength/(2*aperature),physicalLength+sensorToBack)),p1=pointRemap(point(imageCircleRadius,0));
-	pixels.drawLinePixels(p0,p1);/*
+	//auto p0=pointRemap(point(-physicalLength/(2*aperature),physicalLength+sensorToBack)),p1=pointRemap(point(imageCircleRadius,0));
+	//pixels.drawLinePixels(p0,p1);
+	
+	//*just draw start point and target
 	for(auto& ray:rays){
 		pixels.drawLinePixels(pointRemap(ray.segments[0].p),pointRemap(ray.target));
 	}
@@ -181,7 +239,7 @@ const vector<shared_ptr<group>> lens::getGroups(){
 }
 
 double lens::getScore(){
-	auto rays=initializeRays(numeric_limits<double>::infinity(),10);
+	auto rays=initializeRays(numeric_limits<double>::infinity(),10,10);
 	bounceRays(rays);
 	
 	//TODO: Evaluate result

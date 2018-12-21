@@ -21,8 +21,8 @@ struct ray{
 	ray(const point& origin,const point& direction);
 	ray(double x,double y,double dx,double dy);
 
-	void fromPoints(const point& p0,const point& p1);
-	void fromPoints(double x0,double y0,double x1,double y1);
+	ray& fromPoints(const point& p0,const point& p1);
+	ray& fromPoints(double x0,double y0,double x1,double y1);
 	
 	//TODO: add material parameter (and make material struct)
 	//TODO: return both a reflect and a refract ray?  will reflection be needed?
