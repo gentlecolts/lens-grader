@@ -17,7 +17,17 @@ void element::setControls(const controlPts& raw){
 }
 
 void element::bounceRays(vector< rayPath >& paths){
-	throw logic_error("Not Implemented: "+string(__func__));
+	//printf("element bouncerays\n");
+	
+	//get our surfaces in real-world coords
+	circle frontCircle,backCircle;
+	std::tie(frontCircle,backCircle)=getFrontBack(getRealSize());
+	
+	//check the front element, if it intersects at t<0 then ignore the intersection
+	//TODO
+	
+	//check the back element, same as front
+	//TODO
 }
 
 
@@ -61,7 +71,8 @@ tuple< circle, circle > element::getFrontBack(const rect &myrec){
 	 * A+y2^2-y1^2=2*(y2-y1)*y0
 	 * (A+y2^2-y1^2)/(2*(y2-y1))=y0
 	 */
-	
+	//TODO: with the addition of the width paramenter, consider fitting to an elipse instead
+	//HINT: the left/right/middle points on the edge are known, if this is not enough then the elipse center could be defined as the middle of the left/right points
 	circle circle1,circle2;
 	
 	circle1.x0=circle2.x0=myrec.x+myrec.w/2;
@@ -78,13 +89,13 @@ tuple< circle, circle > element::getFrontBack(const rect &myrec){
 		c1y1,
 		myrec.y+frontVals[1]*myrec.h,
 		circle1.x0,
-		myrec.x+myrec.w
+		myrec.x+myrec.w*(1+frontVals[2])/2
 	);
 	circle2.y0=calcY0(
 		c2y1,
 		myrec.y+backVals[1]*myrec.h,
 		circle2.x0,
-		myrec.x+myrec.w
+		myrec.x+myrec.w*(1+backVals[2])/2
 	);
 	
 	circle1.r=(c1y1-circle1.y0);
@@ -106,8 +117,8 @@ void element::drawTo(pbuffer &pixels,const rect &target){
 		bordercol=0xff007a6a;
 	auto myrec=getRect(target);
 	
-	circle circle1,circle2;
-	std::tie(circle1,circle2)=getFrontBack(target);
+	circle frontCircle,backCircle;
+	std::tie(frontCircle,backCircle)=getFrontBack(target);
 	
 	//TODO
 	const bool
@@ -121,36 +132,66 @@ void element::drawTo(pbuffer &pixels,const rect &target){
 		//(x-x0)^2+(y-y0)^2=r^2
 		//y=y0 +- sqrt(r^2-(x-x0)^2)
 		x-=c.x0;//x=x-x0
-		return c.y0+(c.upper?1:-1)*sqrt(c.r-x*x);
+		const auto a=max(c.r-x*x,0.0);
+		//const auto r=sqrt(c.r);
+		return c.y0+(c.upper?1:-1)*sqrt(a);
+		//return c.y0+(c.upper?1:-1)*r*sin(acos(x/r));
 	};
 	
-	for(int j=myrec.y;j<(int)(myrec.y+myrec.h);j++){
-		for(int i=myrec.x;i<(int)(myrec.x+myrec.w);i++){
-			//if((circleContains(circle1,i,j)^flipC1) && (circleContains(circle2,i,j)^flipC2)){
-			const int x=i,y=(target.y+target.h)-1-(j-target.y);
-			
-			if(y<=circleY(circle1,x) && y>=circleY(circle2,x)){
-				pixels.pixels[i+pixels.w*j]=bgcol;
-			}
+	auto square=[](const double x){
+		return x*x;
+	};
+	const auto
+		frontX0=target.x+target.w*(1-frontVals[2])/2,
+		frontX1=target.x+target.w*(1+frontVals[2])/2,
+		frontY=target.y+frontVals[1]*target.h,
+		backX0=target.x-target.w*(1-backVals[2])/2,
+		backX1=target.x+target.w*(1+backVals[2])/2,
+		backY=target.y+backVals[1]*target.h;
+	/*Y and j are flipped around, correct them
+	y=(target.y+target.h)-1-(j-target.y)
+	-y+(target.y+target.h)-1+target.y=j
+	j=((target.y+target.h)-1+target.y) - y
+	this can be stored in a constant, so lets do that*/
+	const auto yFlip=(target.y+target.h)-1+target.y;
+	
+	for(int i=myrec.x;i<(int)(myrec.x+myrec.w);i++){
+		auto y0=(i<=frontX0 || i>=frontX1)?frontY:circleY(frontCircle,i);
+		auto y1=(i<=backX0 || i>=backX1)?backY:circleY(backCircle,i);
+		
+		const int
+			j0=yFlip-y0,
+			j1=yFlip-y1;
+		if(j0>=j1){
+			printf("%i j=(%i %i) y=(%f %f) front=<%f %f %f> back=<%f %f %f>\n",i,j0,j1,y0,y1,frontX0,frontX1,frontY,backX0,backX1,backY);
+		}
+		for(int j=j0;j<=j1;j++){
+			//TODO: check bounds n stuff, or clip them above
+			pixels.pixels[i+pixels.w*j]=bgcol;
 		}
 	}
 	
 	//printf("finished element drawto (%f, %f, %f, %f) in rect (%f, %f, %f, %f)\n",frontVals[0],frontVals[1],backVals[0],backVals[1],myrec.x,myrec.y,myrec.w,myrec.h);
 }
 
-void element::setSphereBack(double centerPos, double edgePos){
-	backVals={centerPos,edgePos};
+void element::setSphereBack(double centerPos, double edgePos,double width){
+	backVals={centerPos,edgePos,width};
 	//validate();
 }
-void element::setSphereFront(double centerPos, double edgePos){
-	frontVals={centerPos,edgePos};
+void element::setSphereFront(double centerPos, double edgePos,double width){
+	frontVals={centerPos,edgePos,width};
 	//validate();
 }
 void element::setSphereFrontBack(double frontCenter, double frontEdge, double backCenter, double backEdge){
-	frontVals={frontCenter,frontEdge};
-	backVals={backCenter,backEdge};
+	setSphereFrontBack(frontCenter,frontEdge,1,backCenter,backEdge,1);
+}
+void element::setSphereFrontBack(double frontCenter, double frontEdge, double frontWidth, double backCenter, double backEdge, double backWidth){
+	frontVals={frontCenter,frontEdge,frontWidth};
+	backVals={backCenter,backEdge,backWidth};
 	//validate();
 }
+
+
 void element::validate(){
 	//TODO: this function isnt really runtime ready, but it can work in a pinch
 	for(auto front=frontVals.begin(),back=backVals.begin(); front != frontVals.end() && back != backVals.end(); ++front, ++back){
@@ -161,9 +202,9 @@ void element::validate(){
 			iter_swap(front,back);
 		}
 		
-		//TODO: enforce minimum thickness?
-		//TODO: what do we do if min thickness pushes our lens outside of the 0-1 range?
 		//cannot be thinner than the min thickness, but also may not be outside the 0-1 range
+		//TODO: enforce minimum thickness?
+		//TODO: what do we do if expanding to min thickness pushes our lens outside of the 0-1 range?
 		
 		//no values are permitted to be outside of the 0-1 range
 		*front=clamp(*front,0.0,1.0);

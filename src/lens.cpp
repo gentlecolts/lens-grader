@@ -59,6 +59,9 @@ vector< rayPath > lens::initializeRays(double distanceFromFront, int resolution,
 	const int sampleN=max(samples-1,1);
 	const point focal(0,focalLength);
 	
+	//TODO: fov should probably be from the front of the glass, and not from the focal point(?) so calculate fov here and adjust the below accordingly
+	//NOTE: see https://www.edmundoptics.com/resources/application-notes/imaging/understanding-focal-length-and-field-of-view/ re: principle plane
+	
 	for(int i=0;i<resolution;i++){
 		const point p0(xmax*i/(resolution-1),sampleY);
 		for(int j=0;j<samples;j++){
@@ -83,13 +86,14 @@ vector< rayPath > lens::initializeRays(double distanceFromFront, int resolution,
 				targetX=focal.x-focal.y*lightray.dir.x/lightray.dir.y;
 			}
 			
-			//TODO: as of c++17, emplace_back returns a reference, could use that for instantiation instead
+			//TODO: as of c++17, emplace_back returns a reference, should probably use that for instantiation instead
 			rayPath path;
 			path.segments.push_back(lightray);
 			path.target=point(targetX,0);
 			
 			//since the at-infinity sampling method can produce rays that should not be able to reach the sensor, we need to reject those
 			//TODO: that rejection should be handled by the evaluator, ie there should be some "rejected" state for the rayPath's target
+			//TODO: alternatively, just change the generation method at infinity
 			if(abs(targetX)<=imageCircleRadius){
 				rays.push_back(path);
 			}
@@ -109,7 +113,11 @@ void lens::setControls(const controlPts& raw){
 }
 
 void lens::bounceRays(vector< rayPath >& paths){
-	throw logic_error("Not Implemented: "+string(__func__));
+	//group[0] is the back of the lens, we need to iterate in reverse
+	//groups are not allowed to overlap, so no need to check ordering
+	for(auto r=children.rbegin();r!=children.rend();++r){
+		(*r)->bounceRays(paths);
+	}
 }
 
 rect lens::getRect(const rect& parent) const{
@@ -187,9 +195,9 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	}
 	
 	//display rays
-	auto rays=initializeRays(numeric_limits<double>::infinity(),4,3);
+	auto rays=initializeRays(numeric_limits<double>::infinity(),4,8);
 	//auto rays=initializeRays(100,4,3);
-	//bounceRays(rays);
+	bounceRays(rays);
 	
 	//draw just the initial segment
 	//const auto halfwidth=physicalLength/(2*aperature);
@@ -209,7 +217,11 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	
 	//*just draw start point and target
 	for(auto& ray:rays){
-		pixels.drawLinePixels(pointRemap(ray.segments[0].p),pointRemap(ray.target));
+		point p1=ray.segments[0].p;
+		p1.x+=ray.segments[0].dir.x;
+		p1.y+=ray.segments[0].dir.y;
+		pixels.drawLinePixels(pointRemap(ray.segments[0].p),pointRemap(p1));
+		pixels.drawLinePixels(pointRemap(p1),pointRemap(ray.target));
 	}
 	//*/
 }

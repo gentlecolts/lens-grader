@@ -36,9 +36,10 @@ public:
 	//virtual void setFrontValues(const std::vector<double>& vals);
 	//virtual void setBackValues(const std::vector<double>& vals);
 	
-	void setSphereFront(double centerPos,double edgePos);
-	void setSphereBack(double centerPos,double edgePos);
+	void setSphereFront(double centerPos,double edgePos,double width=1);
+	void setSphereBack(double centerPos,double edgePos,double width=1);
 	void setSphereFrontBack(double frontCenter,double frontEdge,double backCenter,double backEdge);
+	void setSphereFrontBack(double frontCenter,double frontEdge,double frontWidth,double backCenter,double backEdge,double backWidth);
 	
 	//TODO: should this be a compontent function instead?  can a group non-trivially invalid?
 	virtual bool isValid();

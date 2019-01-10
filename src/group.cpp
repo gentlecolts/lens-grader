@@ -24,7 +24,11 @@ void group::setControls(const controlPts& raw){
 }
 
 void group::bounceRays(vector< rayPath >& paths){
-	throw logic_error("Not Implemented: "+string(__func__));
+	//TODO: elements can overlap, this needs to be handled, this is just a simplification
+	//TODO: alternatively, assert that a ray cannot enter a new element until it has exited another.  this is what is currently below, but it's an assertion of how the geometry behaves when overlapped
+	for(auto l:children){
+		l->bounceRays(paths);
+	}
 }
 
 
