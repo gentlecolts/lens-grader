@@ -1,5 +1,6 @@
 #include "element.h"
 #include <algorithm>
+#include <cmath>
 using namespace std;
 
 element::element(group* parent):component(parent){
@@ -16,15 +17,90 @@ void element::setControls(const controlPts& raw){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
 
+template <typename T> static constexpr int sgn(T val){
+    return (T(0)<val)-(val<T(0));
+}
+
 void element::bounceRays(vector< rayPath >& paths){
 	//printf("element bouncerays\n");
 	
 	//get our surfaces in real-world coords
 	circle frontCircle,backCircle;
-	std::tie(frontCircle,backCircle)=getFrontBack(getRealSize());
+	const auto bounds=getRealSize();
+	std::tie(frontCircle,backCircle)=getFrontBack(bounds);
+	
+	printf("Real Bounds: [%f, %f, %f, %f]\n",bounds.x,bounds.y,bounds.w,bounds.h);
+	
+	//TODO: investigate how to best share this function without hurting performance
+	//TODO: if circle is changed to elipse, then this needs to be changed
+	auto circleIntersection=[](const circle &e,const ray &r)->tuple<double,ray>{
+		/*
+		x=dx*t+x0
+		y=dy*t+y0
+		(x-cx0)^2+(y-cy0)^2=r^2
+		
+		(dx*t+x0-cx0)^2+(dy*t+y0-cy0)^2=r^2
+		(dx*t)^2+2*dx*t*(x0-cx0)+(x0-cx0)^2+(dy*t)^2+2*(dy*t)*(y0-cy0)+(y0-cy0)^2=r^2
+		(dx^2+dy^2)*t^2+(2*dx*(x0-cx0)+2*dy*(y0-cy0))*t+(x0-cx0)^2+(y0-cy0)^2-r^2=0
+		*/
+		const auto square=[](auto a){return a*a;};
+		const double
+			a=square(r.dir.x)+square(r.dir.y),
+			b=2*(r.dir.x*(r.p.x-e.x0)+r.dir.y*(r.p.y-e.y0)),
+			c=square(r.p.x-e.x0)+square(r.p.y-e.y0)-e.r,
+			//if dy is positive: upper shell uses greater t, lower shell uses lower t
+			//if dy is negative: upper shell uses lower t, lower shell uses upper t
+			//NOTE: dy "should" never actually be positive in our simplified model, but must be accounted for
+			//NOTE: this also doesnt guarentee in general that a hit will always be the correct shell,
+			//however the edge cases of this should be handled by the geometry of the lens
+			//consider: if both intersections are  on the bottom shell.  the only possible way for this to happen is that either
+			//A) the ray had to have passed through the barrel of the lens
+			//B) the ray will have first hit the flat plane of the lens, and that intersection will be used instead anyways
+			//since neither of these are issues, we can ignore this case
+			//TODO: additionally, since we know the ray must hit the circle by the time we get here, we probably dont even need any if checks, and probably dont need to return t either
+			s=(e.upper?1:-1)*sgn(r.dir.y),
+			t=(-b+s*sqrt(b*b-4*a*c))/(2*a);
+		if(isfinite(t)){
+			const point p0(e.x0,e.y0),p1(r.dir.x*t+r.p.x,r.dir.y*t+r.p.y);
+			ray normal=ray().fromPoints(p0,p1).normalized();
+			normal.p=p1;//make sure it's coming out from the surface (point of intersection), not the circle's center
+			return make_tuple(t,normal);
+		}else{
+			return make_tuple(t,ray());
+		}
+	};
+	const auto getXminmax=[](const rect& r,const double width)->tuple<double,double>{
+		return make_tuple(r.x+r.w*(1-width)/2,r.x+r.w*(1+width)/2);
+	};
 	
 	//check the front element, if it intersects at t<0 then ignore the intersection
-	//TODO
+	double t,xmin,xmax;
+	ray normal;
+	tie(xmin,xmax)=getXminmax(bounds,frontVals[2]);
+	const auto fronty=bounds.y+frontVals[1]*bounds.h;
+		
+	for(rayPath& path:paths){
+		//first intersect the front plane
+		const ray& r=path.segments.back();
+		t=(fronty-r.p.y)/r.dir.y;
+		auto x=r.dir.x*t+r.p.x;
+		normal=ray(x,fronty,0,1);//normal is a ray pointing up from the point of intersection
+		
+		if(x>xmin && x<xmax){//should be using the circle instead
+			tie(t,normal)=circleIntersection(frontCircle,r);
+		}else if(x<bounds.x || x>bounds.x+bounds.h){//missed the plane entirely
+			//TODO
+		}
+		
+		//if elements are overlapping, it's possible for t to be negative
+		//NOTE: this will need to be updated to correctly handle more than one glass material at the same time
+		if(t>=0){
+			path.refract(normal,ior);
+		}
+	}
+	
+	//TODO: after the back intersection is calculated, calculate the intensity loss between the front and back of the lens
+	//NOTE: alternatively, implement some material struct and compute fresnel stuff in refract()
 	
 	//check the back element, same as front
 	//TODO
@@ -36,19 +112,20 @@ rect element::getRect(const rect& parent) const{
 	const auto
 		frontVal=*max_element(begin(frontVals),end(frontVals)),
 		backVal=*min_element(begin(backVals),end(backVals));
-	
+	//TODO: 1.0 should be the greatest width
 	auto w=1.0*parent.w;
 	
 	auto
 		x0=parent.x+parent.w/2 - w/2,
 		x1=x0+w,
-		//since the rect coords are lower=front/top, higher=back/bottom, gotta flip it
-		y0=parent.y+(1-frontVal)*parent.h,
-		y1=parent.y+(1-backVal)*parent.h;
+		y0=parent.y+backVal*parent.h,
+		y1=parent.y+frontVal*parent.h;
 	return rect(x0,y0,x1-x0,y1-y0);
 }
 rect element::getRealSize() const{
-	return getRect(parent->getRealSize());
+	const auto r=getRect(parent->getRealSize());
+	printf("Element is bounded by: (%f, %f), (%f, %f)\n",r.x,r.y,r.w,r.h);
+	return r;
 }
 
 
@@ -107,7 +184,7 @@ tuple< circle, circle > element::getFrontBack(const rect &myrec){
 	circle1.upper=frontVals[0]>frontVals[1];
 	circle2.upper=backVals[0]>backVals[1];
 	
-	return tuple<circle,circle>{circle1,circle2};
+	return make_tuple(circle1,circle2);
 }
 
 //for displaying on-screen

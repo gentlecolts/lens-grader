@@ -18,6 +18,7 @@ protected:
 	virtual rect getRect(const rect& parent) const override;
 	
 	std::vector<double> frontVals,backVals;
+	double ior=1.6;//TODO
 	
 	virtual void validate();
 public:
@@ -43,6 +44,8 @@ public:
 	
 	//TODO: should this be a compontent function instead?  can a group non-trivially invalid?
 	virtual bool isValid();
+	
+	std::vector<point> getSurface();
 };
 
 #endif // ELEMENT_H

@@ -59,7 +59,7 @@ int main(int argc,char** argv){
 	l->getGroups()[0]->setMovementMultiplier(0);
 	l->getGroups()[1]->setMovementMultiplier(0.5);
 	l->getGroups()[2]->setMovementMultiplier(1);
-	
+	//TODO: write shape to file
 	
 	auto startTime = chrono::system_clock::now();
 	const double frequency=4*atan(1.0);

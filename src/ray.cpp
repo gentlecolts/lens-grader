@@ -23,14 +23,44 @@ ray& ray::fromPoints(double x0,double y0,double x1,double y1){
 	
 	return *this;
 }
-
-ray ray::refract(const ray& normal){
-	//TODO
-	return ray(normal.p,dir);
+void ray::normalize(){
+	const auto d=sqrt(dir.x*dir.x+dir.y*dir.y);
+	dir.x/=d;
+	dir.y/=d;
+}
+ray ray::normalized() const{
+	ray r=*this;
+	r.normalize();
+	return r;
 }
 
 
-void rayPath::refract(const ray& normal){
+ray ray::refract(const ray& normal,double ior){
+	auto dot=[](const point& v0,const point& v1){
+		return v0.x*v1.x+v0.y+v1.y;
+	};
+	
+	auto n=normal.normalized().dir;
+	auto l=normalized().dir;
+	auto ctheta1=-dot(n,l);
+	
+	if(ctheta1<0){
+		n=point(1+2*ctheta1*n.x,1+2*ctheta1*n.y);
+		ctheta1=-dot(n,l);
+	}
+	
+	auto r=currentIOR/ior,a=r*ctheta1-sqrt(1-r*r*(1-ctheta1*ctheta1));
+	point vrefract(r*l.x+a*n.x,r*n.y+a*n.y);
+	
+	ray rout(normal.p,vrefract);
+	rout.currentIOR=ior;
+	return rout;
+}
+
+
+void rayPath::refract(const ray& normal,double ior){
+	auto newray=segments.back().refract(normal,ior);
+	segments.push_back(newray);
 }
 
 

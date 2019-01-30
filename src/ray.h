@@ -24,15 +24,18 @@ struct ray{
 	ray& fromPoints(const point& p0,const point& p1);
 	ray& fromPoints(double x0,double y0,double x1,double y1);
 	
-	//TODO: add material parameter (and make material struct)
+	void normalize();
+	ray normalized() const;
+	
+	//TODO: add material parameter (and make material struct?) or is ior sufficient?
 	//TODO: return both a reflect and a refract ray?  will reflection be needed?
-	ray refract(const ray& normal);
+	ray refract(const ray& normal,double ior);
 };
 
 struct rayPath{
 	std::vector<ray> segments;
 	point target;
-	void refract(const ray& normal);
+	void refract(const ray& normal,double ior);
 };
 
 struct pbuffer{

@@ -37,18 +37,20 @@ rect group::getFullRect(const rect& parent) const{
 	myrec.w*=width;
 	myrec.h*=front-back;//
 	myrec.x+=(parent.w-myrec.w)/2;//target.center-myrec.w/2 = (target.x+target.w/2)-myrec.w/2 = target.x+(target.w-myrec.w)/2
-	myrec.y+=parent.h*(1-front);
+	myrec.y+=parent.h*back;
 	return myrec;
 }
 rect group::getRect(const rect& parent) const{
 	auto region=getFullRect(parent);
 	auto truePosition=0.5+(position-0.5)*(2*movementMultiplier-1);
-	region.y+=(1-truePosition)*(region.h*range);
-	region.h*=(1-range);
+	region.y+=truePosition*region.h*range;
+	region.h*=1-range;
 	return region;
 }
 rect group::getRealSize() const{
-	return getRect(parent->getRealSize());
+	const auto r=getRect(parent->getRealSize());
+	printf("Group is bounded by: (%f, %f), (%f, %f)\n",r.x,r.y,r.w,r.h);
+	return r;
 }
 
 
@@ -70,15 +72,18 @@ void group::drawTo(pbuffer &pixels,const rect &target){
 	
 	for(int j=y0;j<y1;j++){
 		for(int i=x0;i<x1;i++){
-			auto col=bgcol;
+			//X is fine, but y needs to flip
+			const int x=i,y=pixels.h-1-j;
 			
+			auto col=bgcol;
 			if(i==x0 || i==x1-1 || j==y0 || j==y1-1){
 				col=bordercol;
 			}else if(i>=region.x && i<=region.x+region.w && j>=region.y && j<=region.y+region.h){
 				col=rangecol;
 			}
 			
-			pixels.pixels[i+pixels.w*j]=col;
+			//TODO: check against buffer boundaries
+			pixels.pixels[x+pixels.w*y]=col;
 		}
 	}
 	

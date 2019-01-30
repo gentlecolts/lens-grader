@@ -147,7 +147,9 @@ rect lens::getRect(const rect& parent) const{
 }
 rect lens::getRealSize() const{
 	const auto width=physicalLength/aperature;
-	return rect(-width/2,0,width,physicalLength);
+	const rect r(-width/2,0,width,physicalLength+sensorToBack);
+	printf("Lens is bounded by: (%f, %f), (%f, %f)\n",r.x,r.y,r.w,r.h);
+	return r;
 }
 
 
@@ -215,13 +217,28 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	//auto p0=pointRemap(point(-physicalLength/(2*aperature),physicalLength+sensorToBack)),p1=pointRemap(point(imageCircleRadius,0));
 	//pixels.drawLinePixels(p0,p1);
 	
-	//*just draw start point and target
+	//calculate the final ray intersections with the image sensor
+	//TODO
+	
+	/*just draw start point and target
 	for(auto& ray:rays){
 		point p1=ray.segments[0].p;
 		p1.x+=ray.segments[0].dir.x;
 		p1.y+=ray.segments[0].dir.y;
 		pixels.drawLinePixels(pointRemap(ray.segments[0].p),pointRemap(p1));
 		pixels.drawLinePixels(pointRemap(p1),pointRemap(ray.target));
+	}
+	/*/
+	//draw all points on each path, then TODO the final intersection point
+	for(auto& ray:rays){
+		if(ray.segments.size()>1){
+			auto r0=ray.segments.begin();
+			const auto rend=ray.segments.end();
+			for(auto r1=(r0+1);r1!=rend;++r1){
+				pixels.drawLinePixels(pointRemap(r0->p),pointRemap(r1->p));
+				r0=r1;
+			}
+		}
 	}
 	//*/
 }
