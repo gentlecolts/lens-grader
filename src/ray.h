@@ -17,6 +17,8 @@ struct ray{
 	double intensity=1,currentIOR=1;
 	//double wavelength;//TODO
 	
+	bool lost=false;
+	
 	ray();
 	ray(const point& origin,const point& direction);
 	ray(double x,double y,double dx,double dy);
@@ -57,5 +59,22 @@ struct rect{
 	rect();
 	rect(double x0,double y0,double width,double height);
 };
+
+//TODO: this should actually flip the rect within a pixel buffer, then remap the point within that flipped rect
+template<typename T>
+T flipInsideBuffer(const pbuffer& pix,const rect& r, const T& y){
+	/*
+	//where is y relative to the rect's y
+	const T dy=y-r.y;
+	
+	//where is the rect's bottom y with respect to the buffer
+	const T rectY=pix.h-1-r.y;
+	
+	//up relative to the rect is down relative to the pixel buffer
+	return rectY-dy;
+	/*/
+	return pix.h-1-y;
+	//*/
+}
 
 #endif // RAY_H_INCLUDED

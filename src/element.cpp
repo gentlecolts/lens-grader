@@ -103,7 +103,29 @@ void element::bounceRays(vector< rayPath >& paths){
 	//NOTE: alternatively, implement some material struct and compute fresnel stuff in refract()
 	
 	//check the back element, same as front
-	//TODO
+	//*
+	tie(xmin,xmax)=getXminmax(bounds,backVals[2]);
+	const auto backy=bounds.y+backVals[1]*bounds.h;
+	for(rayPath& path:paths){
+		//first intersect the front plane
+		const ray& r=path.segments.back();
+		t=(backy-r.p.y)/r.dir.y;
+		auto x=r.dir.x*t+r.p.x;
+		normal=ray(x,backy,0,1);//normal is a ray pointing up from the point of intersection
+		
+		if(x>xmin && x<xmax){//should be using the circle instead
+			tie(t,normal)=circleIntersection(backCircle,r);
+		}else if(x<bounds.x || x>bounds.x+bounds.h){//missed the plane entirely
+			//TODO
+		}
+		
+		//if elements are overlapping, it's possible for t to be negative
+		//NOTE: this will need to be updated to correctly handle more than one glass material at the same time
+		if(t>=0){
+			path.refract(normal,1);
+		}
+	}
+	//*/
 }
 
 
@@ -237,8 +259,8 @@ void element::drawTo(pbuffer &pixels,const rect &target){
 		auto y1=(i<=backX0 || i>=backX1)?backY:circleY(backCircle,i);
 		
 		const int
-			j0=yFlip-y0,
-			j1=yFlip-y1;
+			j0=flipInsideBuffer(pixels,target,y0),
+			j1=flipInsideBuffer(pixels,target,y1);
 		if(j0>=j1){
 			printf("%i j=(%i %i) y=(%f %f) front=<%f %f %f> back=<%f %f %f>\n",i,j0,j1,y0,y1,frontX0,frontX1,frontY,backX0,backX1,backY);
 		}

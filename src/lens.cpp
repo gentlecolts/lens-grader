@@ -5,6 +5,41 @@
 #include <limits>
 using namespace std;
 
+struct lens::drawRects{
+	rect full,barrel,sensor;
+}
+
+//TODO: should this be a protected virtual of lens?
+static inline double gradeRays(const std::vector<rayPath>& rays){
+	double squareErr=0;
+	int count=0;
+	for(auto& path:rays){
+		const ray& r=path.segments.back();
+		if(r.lost){
+			//good if the ray was supposed to be lost, bad if it wasnt, score this somehow
+		}else{
+			const double s=r.p.x - path.target.x;
+			//cout<<ray.segments.back().p.x<<" "<<ray.target.x<<" "<<s<<endl;
+			squareErr+=s*s;
+			++count;
+		}
+	}
+	squareErr/=count;
+	//cout<<score<<endl;
+	return isfinite(squareErr)?1/(1+squareErr):0;
+}
+static inline void intersectSensor(std::vector<rayPath>& rays){
+	for(auto& path:rays){
+		ray& r=path.segments.back();
+		if(!r.lost){
+			//solve y=0
+			const double t=-r.p.y/r.dir.y;
+			const double x=r.dir.x*t+r.p.x;
+			//add in a new point
+			path.refract(ray(x,0,0,1),1);
+		}
+	}
+}
 
 lens::lens(int groupCount, double focalLen):component(nullptr),focalLength(focalLen){
 	groupCount=max(groupCount,1);//must have at least one group
@@ -120,45 +155,70 @@ void lens::bounceRays(vector< rayPath >& paths){
 	}
 }
 
+double lens::fullWidth() const{
+	return max(physicalLength/aperature,2*max(mountRadius,imageCircleRadius));
+}
 rect lens::getRect(const rect& parent) const{
-	//determine the actual shape of the bounding box
-	const double
-	cx=parent.x+parent.w/2,
-	cy=parent.y+parent.h/2,
-	ratio=(physicalLength+sensorToBack)/(physicalLength/aperature);//total length / width
-	double h=parent.h,w=h/ratio;
+	//start with the width/height of the rect
+	auto width=fullWidth(),height=physicalLength+sensorToBack;
 	
-	//cout<<w<<" "<<h<<endl;
+	//scale them down to fit in the parent rect
+	const auto scale=(width/height>parent.w/parent.h)?parent.w/width:parent.h/height;
+	width*=scale;
+	height*=scale;
 	
-	if(w>parent.w){
-		h=h*parent.w/w;
-		w=parent.w;
-	}
+	//find the origin of the rect (bottom-left)
+	const auto
+		x=parent.x+parent.w/2-width/2,
+		y=parent.y+parent.h/2-height/2;
+	return rect(x,y,width,height);
+}
+rect lens::getBarrelRect(const rect& parent) const{
+	//start with the total bounding rect
+	auto r=getRect(parent);
 	
-	//create new bounds with the correct dimensions
-	rect lensRec;
-	lensRec.w=w;
-	lensRec.h=h*physicalLength/(physicalLength+sensorToBack);
-	lensRec.x=cx-lensRec.w/2;
-	lensRec.y=
-		cy-(parent.h-lensRec.h)/2//center of rectangle
-		-lensRec.h/2;//top of rec
-	return lensRec;
+	//move it up by the flange distance
+	r.y+=r.h*sensorToBack/(physicalLength+sensorToBack);
+	//shrink the height
+	r.h*=physicalLength/(physicalLength+sensorToBack);
+	
+	//use the width of the barrel, instead of the total width including sensor
+	const auto xmid=r.x+r.w/2,barrelWidth=physicalLength/aperature;
+	r.w*=barrelWidth/fullWidth();
+	r.x=xmid-r.w/2;
+	
+	return r;
+}
+rect lens::getSensorRect(const rect& parent) const{
+	//start with the total bounding rect
+	auto r=getRect(parent);
+	
+	//shrink the height
+	r.h*=sensorToBack/(physicalLength+sensorToBack);
+	
+	//use the width of the sensor, instead of the total width including barrel
+	const auto xmid=r.x+r.w/2,sensorWidth=2*max(imageCircleRadius,mountRadius);
+	r.w*=sensorWidth/fullWidth();
+	r.x=xmid-r.w/2;
+	
+	return r;
 }
 rect lens::getRealSize() const{
-	const auto width=physicalLength/aperature;
+	//TODO: picking one or the other here has the problem of not necessarily matching up with the width set by getRect().  there is no good way around this, so perhaps it might be better to abandon the idea of a bounding box and instead use coordinate spaces
+	//NOTE: using cordinate spaces instead of bounding boxes loses a lot of obvious promises, and may make drawing more difficult
+	//const auto width=physicalLength/aperature;
+	const auto width=2*imageCircleRadius;
 	const rect r(-width/2,0,width,physicalLength+sensorToBack);
 	printf("Lens is bounded by: (%f, %f), (%f, %f)\n",r.x,r.y,r.w,r.h);
 	return r;
 }
-
 
 void lens::drawTo(pbuffer &pixels,const rect &target){
 	const uint32_t
 		lenscolor=0xffdacd47,
 		sensorcolor=0xff5caee5;
 	
-	auto lensRec=getRect(target);
+	auto lensRec=getBarrelRect(target);
 	//cout<<lensRec.w<<" "<<lensRec.h<<" "<<lensRec.x<<" "<<lensRec.y<<endl;
 	
 	//TODO: clip target rect to buffer's size before this loop, in case of bad input
@@ -169,25 +229,27 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	//draw lens area
 	for(int j=lensRec.y;j<(int)(lensRec.y+lensRec.h);j++){
 		for(int i=lensRec.x;i<(int)(lensRec.x+lensRec.w);i++){
-			pixels.pixels[i+pixels.w*j]=lenscolor;
+			pixels.pixels[i+pixels.w*flipInsideBuffer(pixels,target,j)]=lenscolor;
 		}
 	}
 	
 	//draw sensor area
 	//this is a bit more interesting, a trapezoid with the top being the mount radius and the bottom being the image circle
-	
-	const int j0=lensRec.y+lensRec.h,j1=j0+(lensRec.h*sensorToBack)/focalLength;//j1=target.y+target.h;
-	const double realtopixel=lensRec.w/(physicalLength/aperature);//pixel width of the lens divided by "real" width of the lens, as a conversion ratio point
-	const double cx=target.x+target.w/2;
+	const auto sensorRect=getSensorRect(target);
+	const auto
+		cx=sensorRect.x+sensorRect.w/2,
+		sensorXRadius=max(imageCircleRadius,mountRadius),
+		mountPixelRadius=sensorRect.w/2*mountRadius/sensorXRadius,
+		circlePixelRadius=sensorRect.w/2*imageCircleRadius/sensorXRadius;
+	const int j0=sensorRect.y,j1=sensorRect.y+sensorRect.h;
 	
 	for(int j=j0;j<j1;j++){
 		//how wide should we be
 		const double t=((double)(j-j0))/(j1-1-j0);
-		const int realwidth=realtopixel*(mountRadius+t*(imageCircleRadius-mountRadius));//note this is actually half of the width, but that's what we want anyways
+		const int realwidth=circlePixelRadius+t*(mountPixelRadius-circlePixelRadius);//note this is actually half of the width, but that's what we want anyways
 		
-		for(int i=cx-realwidth;i<=cx+realwidth;i++){
-			pixels.pixels[i+pixels.w*j]=sensorcolor;
-		}
+		const int y=flipInsideBuffer(pixels,target,j);
+		pixels.drawLinePixels(cx-realwidth,y,cx+realwidth,y,sensorcolor);
 	}
 	
 	//draw each group
@@ -197,9 +259,15 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	}
 	
 	//display rays
-	auto rays=initializeRays(numeric_limits<double>::infinity(),4,8);
-	//auto rays=initializeRays(100,4,3);
+	//auto rays=initializeRays(numeric_limits<double>::infinity(),4,8);
+	auto rays=initializeRays(100,4,3);
 	bounceRays(rays);
+	
+	//calculate the final ray intersections with the image sensor
+	intersectSensor(rays);
+	
+	//get the score
+	printf("Score: %f\n",gradeRays(rays));
 	
 	//draw just the initial segment
 	//const auto halfwidth=physicalLength/(2*aperature);
@@ -207,18 +275,22 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 		pixelWidth=lensRec.w*imageCircleRadius/(physicalLength/(2*aperature)),
 		circlePixelX=lensRec.x+lensRec.w/2-pixelWidth/2,
 		pixelHeight=lensRec.h*(1+sensorToBack/focalLength);
+	const auto realRec=getRealSize(),pixelRec=getRect(target);
 	const auto pointRemap=[&](const point& p){
 		//first convert the input point from real-world coordinates into into the coordinate space such that x=[-1,1], y=[0,1]
 		//noting that x spans the image circle's width and y is from the sensor to the front of the camera
 		//then convert it to the display surface space (noting that (0,0) is top-left)
-		return point(circlePixelX+pixelWidth*((p.x/imageCircleRadius)+1)/2,lensRec.y+pixelHeight*(1-p.y/(physicalLength+sensorToBack)));
+		//return point(circlePixelX+pixelWidth*((p.x/imageCircleRadius)+1)/2,lensRec.y+pixelHeight*(1-p.y/(physicalLength+sensorToBack)));
+		
+		//TODO: real size only accounts for the width of the image circle, getRect uses the widest part of the lens (barrel, mount, or image circle).  this will probably fail if the circle is not the widest part
+		const auto x=pixelRec.x+pixelRec.w*(p.x-realRec.x)/realRec.w;
+		const auto y=flipInsideBuffer(pixels,target,pixelRec.y+pixelRec.h*(p.y-realRec.y)/realRec.h);
+		
+		return point(x,y);
 	};
 	
 	//auto p0=pointRemap(point(-physicalLength/(2*aperature),physicalLength+sensorToBack)),p1=pointRemap(point(imageCircleRadius,0));
 	//pixels.drawLinePixels(p0,p1);
-	
-	//calculate the final ray intersections with the image sensor
-	//TODO
 	
 	/*just draw start point and target
 	for(auto& ray:rays){
@@ -234,9 +306,18 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 		if(ray.segments.size()>1){
 			auto r0=ray.segments.begin();
 			const auto rend=ray.segments.end();
+			
+			//*
+			for_each(r0,rend,[](const auto& r){
+				printf("{(%f,%f) (%f,%f)} ",r.p.x,r.p.y,r.dir.x,r.dir.y);
+			});printf("\n");
+			//*/
+			
 			for(auto r1=(r0+1);r1!=rend;++r1){
-				pixels.drawLinePixels(pointRemap(r0->p),pointRemap(r1->p));
-				r0=r1;
+				if(!r0->lost){
+					pixels.drawLinePixels(pointRemap(r0->p),pointRemap(r1->p));
+					r0=r1;
+				}
 			}
 		}
 	}
@@ -268,9 +349,12 @@ const vector<shared_ptr<group>> lens::getGroups(){
 }
 
 double lens::getScore(){
+	//TODO: for each set of rays tested, we need to set the position appropriately
 	auto rays=initializeRays(numeric_limits<double>::infinity(),10,10);
 	bounceRays(rays);
 	
+	intersectSensor(rays);
+	
 	//TODO: Evaluate result
-	return 0;
+	return gradeRays(rays);
 }

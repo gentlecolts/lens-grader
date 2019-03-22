@@ -81,11 +81,12 @@ int main(int argc,char** argv){
 		auto nowTime = chrono::system_clock::now();
 		chrono::duration<double> diff = nowTime-startTime;
 		
-		dynamic_cast<lens*>(l)->setPosition((sin(frequency*diff.count())+1)/2);
+		//dynamic_cast<lens*>(l)->setPosition((sin(frequency*diff.count())+1)/2);
 		//*/
 		
 		const double scale=.5;
-		l->drawTo(pix,rect(width*(0.5-scale/2),height*(0.5-scale/2),width*scale,height*scale));
+		SDL_FillRect(surf,NULL,0x00000000);
+		l->drawTo(pix,rect(width*(0.5-scale/2),0*height*(0.5-scale/2),width*scale,height*scale));
 
 		//SDL_UpdateTexture(SDL_GetRenderTarget(r),NULL,pixels,width*sizeof(*pixels));
 		SDL_Texture* tex=SDL_CreateTextureFromSurface(r,surf);

@@ -10,7 +10,12 @@ protected:
 	//distances are in milimieters, aperature is f/a (ex f/2.8 is stored as 2.8)
 	double mountRadius=17,sensorToBack=46.50,imageCircleRadius=21.6333,physicalLength=100,focalLength=100,aperature=2.8;
 	
+	struct drawRects;
+	
 	virtual rect getRect(const rect& parent) const override;
+	virtual rect getBarrelRect(const rect& parent) const;
+	virtual rect getSensorRect(const rect& parent) const;
+	virtual double fullWidth() const;
 	
 	//TODO: display ray count/simulation ray count should both be attributes of this class
 	virtual std::vector<rayPath> initializeRays(double distanceFromFront,int resolution,int samples);

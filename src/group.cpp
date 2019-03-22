@@ -73,7 +73,7 @@ void group::drawTo(pbuffer &pixels,const rect &target){
 	for(int j=y0;j<y1;j++){
 		for(int i=x0;i<x1;i++){
 			//X is fine, but y needs to flip
-			const int x=i,y=pixels.h-1-j;
+			const int x=i,y=flipInsideBuffer(pixels,target,j);
 			
 			auto col=bgcol;
 			if(i==x0 || i==x1-1 || j==y0 || j==y1-1){
