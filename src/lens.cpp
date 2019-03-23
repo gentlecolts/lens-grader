@@ -7,7 +7,7 @@ using namespace std;
 
 struct lens::drawRects{
 	rect full,barrel,sensor;
-}
+};
 
 //TODO: should this be a protected virtual of lens?
 static inline double gradeRays(const std::vector<rayPath>& rays){
@@ -159,66 +159,67 @@ double lens::fullWidth() const{
 	return max(physicalLength/aperature,2*max(mountRadius,imageCircleRadius));
 }
 rect lens::getRect(const rect& parent) const{
-	//start with the width/height of the rect
-	auto width=fullWidth(),height=physicalLength+sensorToBack;
-	
-	//scale them down to fit in the parent rect
-	const auto scale=(width/height>parent.w/parent.h)?parent.w/width:parent.h/height;
-	width*=scale;
+	//since this is a "lens" we only care about the bounding box of the barrel itself.  nothing should be in or care about the sensor area outside of drawing
+	auto height=physicalLength,width=physicalLength/aperature;
+	const auto scale=min(parent.w/width,parent.h/height);
 	height*=scale;
+	width*=scale;
 	
-	//find the origin of the rect (bottom-left)
-	const auto
-		x=parent.x+parent.w/2-width/2,
-		y=parent.y+parent.h/2-height/2;
-	return rect(x,y,width,height);
+	const point center(parent.x+parent.w/2,parent.y+parent.h/2);
+	
+	return rect(center.x-width/2,center.y-width/2,width,height);
 }
-rect lens::getBarrelRect(const rect& parent) const{
-	//start with the total bounding rect
-	auto r=getRect(parent);
+lens::drawRects lens::getDrawRects(const rect& parent) const{
+	drawRects rects;
 	
-	//move it up by the flange distance
-	r.y+=r.h*sensorToBack/(physicalLength+sensorToBack);
-	//shrink the height
-	r.h*=physicalLength/(physicalLength+sensorToBack);
+	//we're going to need this
+	const auto fullwidth=fullWidth();
 	
-	//use the width of the barrel, instead of the total width including sensor
-	const auto xmid=r.x+r.w/2,barrelWidth=physicalLength/aperature;
-	r.w*=barrelWidth/fullWidth();
-	r.x=xmid-r.w/2;
+	//first, the big bounding box
+	{
+		auto width=fullwidth,height=sensorToBack+physicalLength;
+		const auto scale=min(parent.w/width,parent.h/height);
+		height*=scale;
+		width*=scale;
+		
+		const point center(parent.x+parent.w/2,parent.y+parent.h/2);
+		rects.full=rect(center.x-width/2,center.y-width/2,width,height);
+	}
 	
-	return r;
-}
-rect lens::getSensorRect(const rect& parent) const{
-	//start with the total bounding rect
-	auto r=getRect(parent);
+	//now we can get the lens bounding boxes
+	{
+		const auto
+			lengthRatio=physicalLength/(physicalLength+sensorToBack),
+			widthRatio=(physicalLength/aperature)/fullwidth;
+		rects.barrel.h=rects.full.h*lengthRatio;
+		rects.barrel.y=rects.full.y+rects.full.h*(1-lengthRatio);
+		rects.barrel.w=rects.full.w*widthRatio;
+		rects.barrel.x=rects.full.x+rects.full.w*(1-widthRatio)/2;
+	}
 	
-	//shrink the height
-	r.h*=sensorToBack/(physicalLength+sensorToBack);
+	//finally the sensor
+	{
+		const auto widthRatio=2*max(mountRadius,imageCircleRadius)/fullwidth;
+		rects.sensor.h=rects.full.h-rects.barrel.h;
+		rects.sensor.y=rects.full.y;
+		rects.sensor.w=rects.full.w*widthRatio;
+		rects.sensor.x=rects.full.x+rects.full.w*(1-widthRatio)/2;
+	}
 	
-	//use the width of the sensor, instead of the total width including barrel
-	const auto xmid=r.x+r.w/2,sensorWidth=2*max(imageCircleRadius,mountRadius);
-	r.w*=sensorWidth/fullWidth();
-	r.x=xmid-r.w/2;
-	
-	return r;
+	//and we're done
+	return rects;
 }
 rect lens::getRealSize() const{
-	//TODO: picking one or the other here has the problem of not necessarily matching up with the width set by getRect().  there is no good way around this, so perhaps it might be better to abandon the idea of a bounding box and instead use coordinate spaces
-	//NOTE: using cordinate spaces instead of bounding boxes loses a lot of obvious promises, and may make drawing more difficult
-	//const auto width=physicalLength/aperature;
-	const auto width=2*imageCircleRadius;
-	const rect r(-width/2,0,width,physicalLength+sensorToBack);
-	printf("Lens is bounded by: (%f, %f), (%f, %f)\n",r.x,r.y,r.w,r.h);
-	return r;
+	const auto width=physicalLength/aperature;
+	return rect(-width/2,sensorToBack,width,physicalLength);
 }
 
 void lens::drawTo(pbuffer &pixels,const rect &target){
 	const uint32_t
 		lenscolor=0xffdacd47,
 		sensorcolor=0xff5caee5;
-	
-	auto lensRec=getBarrelRect(target);
+	const auto drawrects=getDrawRects(target);
+	auto& lensRec=drawrects.barrel;
 	//cout<<lensRec.w<<" "<<lensRec.h<<" "<<lensRec.x<<" "<<lensRec.y<<endl;
 	
 	//TODO: clip target rect to buffer's size before this loop, in case of bad input
@@ -235,12 +236,12 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	
 	//draw sensor area
 	//this is a bit more interesting, a trapezoid with the top being the mount radius and the bottom being the image circle
-	const auto sensorRect=getSensorRect(target);
+	const auto& sensorRect=drawrects.sensor;
 	const auto
 		cx=sensorRect.x+sensorRect.w/2,
 		sensorXRadius=max(imageCircleRadius,mountRadius),
-		mountPixelRadius=sensorRect.w/2*mountRadius/sensorXRadius,
-		circlePixelRadius=sensorRect.w/2*imageCircleRadius/sensorXRadius;
+		mountPixelRadius=sensorRect.w/2 * mountRadius/sensorXRadius,
+		circlePixelRadius=sensorRect.w/2 * imageCircleRadius/sensorXRadius;
 	const int j0=sensorRect.y,j1=sensorRect.y+sensorRect.h;
 	
 	for(int j=j0;j<j1;j++){
@@ -271,20 +272,9 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	
 	//draw just the initial segment
 	//const auto halfwidth=physicalLength/(2*aperature);
-	const auto
-		pixelWidth=lensRec.w*imageCircleRadius/(physicalLength/(2*aperature)),
-		circlePixelX=lensRec.x+lensRec.w/2-pixelWidth/2,
-		pixelHeight=lensRec.h*(1+sensorToBack/focalLength);
-	const auto realRec=getRealSize(),pixelRec=getRect(target);
 	const auto pointRemap=[&](const point& p){
-		//first convert the input point from real-world coordinates into into the coordinate space such that x=[-1,1], y=[0,1]
-		//noting that x spans the image circle's width and y is from the sensor to the front of the camera
-		//then convert it to the display surface space (noting that (0,0) is top-left)
-		//return point(circlePixelX+pixelWidth*((p.x/imageCircleRadius)+1)/2,lensRec.y+pixelHeight*(1-p.y/(physicalLength+sensorToBack)));
-		
-		//TODO: real size only accounts for the width of the image circle, getRect uses the widest part of the lens (barrel, mount, or image circle).  this will probably fail if the circle is not the widest part
-		const auto x=pixelRec.x+pixelRec.w*(p.x-realRec.x)/realRec.w;
-		const auto y=flipInsideBuffer(pixels,target,pixelRec.y+pixelRec.h*(p.y-realRec.y)/realRec.h);
+		const auto x=drawrects.full.x+drawrects.full.w*(1+p.x/(fullWidth()/2))/2;
+		const auto y=flipInsideBuffer(pixels,target,drawrects.full.y+drawrects.full.h*p.y/(sensorToBack+physicalLength));
 		
 		return point(x,y);
 	};

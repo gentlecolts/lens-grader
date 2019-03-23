@@ -13,8 +13,7 @@ protected:
 	struct drawRects;
 	
 	virtual rect getRect(const rect& parent) const override;
-	virtual rect getBarrelRect(const rect& parent) const;
-	virtual rect getSensorRect(const rect& parent) const;
+	virtual drawRects getDrawRects(const rect& parent) const;
 	virtual double fullWidth() const;
 	
 	//TODO: display ray count/simulation ray count should both be attributes of this class

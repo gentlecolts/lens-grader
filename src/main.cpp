@@ -81,7 +81,7 @@ int main(int argc,char** argv){
 		auto nowTime = chrono::system_clock::now();
 		chrono::duration<double> diff = nowTime-startTime;
 		
-		//dynamic_cast<lens*>(l)->setPosition((sin(frequency*diff.count())+1)/2);
+		dynamic_cast<lens*>(l)->setPosition((sin(frequency*diff.count())+1)/2);
 		//*/
 		
 		const double scale=.5;
