@@ -55,8 +55,9 @@ int main(int argc,char** argv){
 	auto elm=g->addElement<element>();
 	elm->setSphereFront(.75,.7);
 	//elm->setSphereBack(.25,0,.5);
-	elm->setSphereBack(0,.2);
+	elm->setSphereBack(.4,.1);
 	
+	l->getGroups()[2]->setWidth(1);
 	l->getGroups()[0]->setMovementMultiplier(0);
 	l->getGroups()[1]->setMovementMultiplier(0.5);
 	l->getGroups()[2]->setMovementMultiplier(1);
