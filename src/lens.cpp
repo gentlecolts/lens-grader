@@ -297,7 +297,7 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 			auto r0=ray.segments.begin();
 			const auto rend=ray.segments.end();
 			
-			//*
+			/*
 			for_each(r0,rend,[](const auto& r){
 				printf("{(%f,%f) (%f,%f)} ",r.p.x,r.p.y,r.dir.x,r.dir.y);
 			});printf("\n");

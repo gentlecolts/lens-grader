@@ -41,16 +41,18 @@ ray ray::refract(const ray& normal,double ior){
 	}
 	
 	const auto dot=[](const point& v0,const point& v1){
-		return v0.x*v1.x+v0.y+v1.y;
+		return v0.x*v1.x+v0.y*v1.y;
 	};
 	
 	auto n=normal.normalized().dir;
 	auto l=normalized().dir;
 	auto ctheta1=-dot(n,l);
 	
-	/*
+	//*
 	if(ctheta1<0){
-		n=point(1+2*ctheta1*n.x,1+2*ctheta1*n.y);
+		//n=point(1+2*ctheta1*n.x,1+2*ctheta1*n.y);
+		//l=point(1+2*ctheta1*l.x,1+2*ctheta1*l.y);
+		n=point(-n.x,-n.y);
 		ctheta1=-dot(n,l);
 	}
 	//*/
