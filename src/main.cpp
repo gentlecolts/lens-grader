@@ -83,6 +83,9 @@ int main(int argc,char** argv){
 	
 	auto control=l->getControls();
 	printVector(control.begin(),control.end());
+	l->setControls(control);
+	control=l->getControls();
+	printVector(control.begin(),control.end());
 
 	while(1){
 		//SDL_FillRect(surface,NULL,SDL_MapRGB(surface->format,0xe5,0x5c,0x69));

@@ -25,13 +25,16 @@ vector<double> group::getControls(){
 	printf("Group added %i control vars\n",controls.size());
 	
 	//individual element controls
-	addChildrenControllsTo(controls);
+	appendChildrenControllsTo(controls);
 	
 	//and return
 	return controls;
 }
 void group::setControls(vector<double>& controls){
-	throw logic_error("Not Implemented: "+string(__func__));
+	consumeControlVars(controls);
+	for(auto& child:children){
+		child->setControls(controls);
+	}
 }
 
 void group::bounceRays(vector< rayPath >& paths){

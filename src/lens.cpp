@@ -143,12 +143,15 @@ vector< rayPath > lens::initializeRays(double distanceFromFront, int resolution,
 vector<double> lens::getControls(){
 	//lens itself has no controlpoints, but it does combine the control points of its children
 	vector<double> controls;
-	addChildrenControllsTo(controls);
+	appendChildrenControllsTo(controls);
 	printf("Total of %i control vars\n",controls.size());
 	return controls;
 }
 void lens::setControls(vector<double>& controls){
-	throw logic_error("Not Implemented: "+string(__func__));
+	//no controls in lens, so we can just pass right along to the children
+	for(auto& child:children){
+		child->setControls(controls);
+	}
 }
 
 void lens::bounceRays(vector< rayPath >& paths){

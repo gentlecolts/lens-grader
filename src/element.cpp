@@ -27,7 +27,7 @@ vector<double> element::getControls(){
 	return controls;
 }
 void element::setControls(vector<double>& controls){
-	throw logic_error("Not Implemented: "+string(__func__));
+	consumeControlVars(controls);
 }
 
 template <typename T> static constexpr int sgn(T val){

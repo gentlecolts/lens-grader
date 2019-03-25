@@ -42,7 +42,8 @@ protected:
 	void appendControlVar(double& var);
 	
 	std::vector<double> copyControlVars();
-	void addChildrenControllsTo(std::vector<double>& target);
+	void appendChildrenControllsTo(std::vector<double>& target);
+	void consumeControlVars(std::vector<double>& source);
 public:
 	component(component* parentComponent);
 	
