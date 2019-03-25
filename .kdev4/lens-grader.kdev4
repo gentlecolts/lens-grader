@@ -25,17 +25,17 @@ Launch Configurations=Launch Configuration 0
 [Launch][Launch Configuration 0]
 Configured Launch Modes=execute
 Configured Launchers=nativeAppLauncher
-Name=New Compiled Binary Launcher
+Name=LensGrader-SDLTest
 Type=Native Application
 
 [Launch][Launch Configuration 0][Data]
 Arguments=
-Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\x16\x00l\x00e\x00n\x00s\x00-\x00g\x00r\x00a\x00d\x00e\x00r)
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x03\x00\x00\x00\x16\x00l\x00e\x00n\x00s\x00-\x00g\x00r\x00a\x00d\x00e\x00r\x00\x00\x00\n\x00t\x00e\x00s\x00t\x00s\x00\x00\x00$\x00L\x00e\x00n\x00s\x00G\x00r\x00a\x00d\x00e\x00r\x00-\x00S\x00D\x00L\x00T\x00e\x00s\x00t)
 Dependency Action=Build
 EnvironmentGroup=
 Executable=file:///home/zangoose/git/lens-grader/
 External Terminal=konsole --noclose --workdir %workdir -e %exe
-Project Target=lens-grader,src,LensGrader
+Project Target=lens-grader,tests,LensGrader-SDLTest
 Use External Terminal=false
 Working Directory=
 isExecutable=false
