@@ -4,16 +4,29 @@
 using namespace std;
 
 element::element(group* parent):component(parent){
-	//ctor
+	//defaults
+	setSphereFrontBack(.6,.65,1,.5,.45,1);
+	
+	//set up our controls
+	for(double& val:frontVals){
+		appendControlVar(val);
+	}
+	for(double& val:backVals){
+		appendControlVar(val);
+	}
 }
 element::~element(){
 	//dtor
 }
 
-controlPts element::getControls(){
-	throw logic_error("Not Implemented: "+string(__func__));
+vector<double> element::getControls(){
+	auto controls=copyControlVars();
+	
+	printf("Element added %i control vars\n",controls.size());
+	
+	return controls;
 }
-void element::setControls(const controlPts& raw){
+void element::setControls(vector<double>& controls){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
 
@@ -92,7 +105,7 @@ void element::bounceRays(vector< rayPath >& paths){
 	const auto bounds=getRealSize();
 	std::tie(frontCircle,backCircle)=getFrontBack(bounds);
 	
-	printf("Real Bounds: [%f, %f, %f, %f]\n",bounds.x,bounds.y,bounds.w,bounds.h);
+	//printf("Real Bounds: [%f, %f, %f, %f]\n",bounds.x,bounds.y,bounds.w,bounds.h);
 	
 	//TODO: investigate how to best share this function without hurting performance
 	//TODO: if circle is changed to elipse, then this needs to be changed
@@ -138,7 +151,7 @@ rect element::getRect(const rect& parent) const{
 }
 rect element::getRealSize() const{
 	const auto r=getRect(parent->getRealSize());
-	printf("Element is bounded by: (%f, %f), (%f, %f)\n",r.x,r.y,r.w,r.h);
+	//printf("Element is bounded by: (%f, %f), (%f, %f)\n",r.x,r.y,r.w,r.h);
 	return r;
 }
 
@@ -267,19 +280,19 @@ void element::drawTo(pbuffer &pixels,const rect &target){
 
 void element::setSphereBack(double centerPos, double edgePos,double width){
 	backVals={centerPos,edgePos,width};
-	//validate();
+	validate();
 }
 void element::setSphereFront(double centerPos, double edgePos,double width){
 	frontVals={centerPos,edgePos,width};
-	//validate();
+	validate();
 }
 void element::setSphereFrontBack(double frontCenter, double frontEdge, double backCenter, double backEdge){
-	setSphereFrontBack(frontCenter,frontEdge,1,backCenter,backEdge,1);
+	setSphereFrontBack(frontCenter,frontEdge,frontVals[2],backCenter,backEdge,backVals[2]);
 }
 void element::setSphereFrontBack(double frontCenter, double frontEdge, double frontWidth, double backCenter, double backEdge, double backWidth){
 	frontVals={frontCenter,frontEdge,frontWidth};
 	backVals={backCenter,backEdge,backWidth};
-	//validate();
+	validate();
 }
 
 
@@ -288,13 +301,13 @@ void element::validate(){
 	for(auto front=frontVals.begin(),back=backVals.begin(); front != frontVals.end() && back != backVals.end(); ++front, ++back){
 		//0=back, 1=front
 		
-		//cannot be in front of the front
+		//back cannot be in front of the front
 		if(*front<*back){
 			iter_swap(front,back);
 		}
 		
 		//cannot be thinner than the min thickness, but also may not be outside the 0-1 range
-		//TODO: enforce minimum thickness?
+		//TODO: enforce minimum thickness?  NOTE: need to check both x and y thicknesses?  x will always be thin somewhere, is that ok?
 		//TODO: what do we do if expanding to min thickness pushes our lens outside of the 0-1 range?
 		
 		//no values are permitted to be outside of the 0-1 range

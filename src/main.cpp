@@ -3,6 +3,7 @@
 #include "element.h"
 #include <SDL2/SDL.h>
 #include <chrono>
+#include <iostream>
 using namespace std;
 
 /*
@@ -25,6 +26,20 @@ void pollEvents(){
 			exit(0);
 		}
 	}
+}
+
+template<typename Iterator>
+void printVector(Iterator begin, Iterator end){
+	cout<<"{";
+	bool second=false;
+	for(; begin != end; ++begin){
+		if(second){
+			cout<<", ";
+		}
+		second=true;
+		cout << *begin;
+	}
+	cout<<"}"<<endl;
 }
 
 int main(int argc,char** argv){
@@ -65,6 +80,9 @@ int main(int argc,char** argv){
 	
 	auto startTime = chrono::system_clock::now();
 	const double frequency=4*atan(1.0);
+	
+	auto control=l->getControls();
+	printVector(control.begin(),control.end());
 
 	while(1){
 		//SDL_FillRect(surface,NULL,SDL_MapRGB(surface->format,0xe5,0x5c,0x69));

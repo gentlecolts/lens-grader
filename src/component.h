@@ -14,11 +14,6 @@ constexpr const T& clamp(const T& v,const T& lo,const T& hi){
 	return (v<lo)?lo:(hi<v)?hi:v;
 }
 
-struct controlPts{
-	std::vector<double> pts;
-	std::vector<std::unique_ptr<controlPts>> children;
-};
-
 class component:public std::enable_shared_from_this<component>{
 protected:
 	//this is kept raw intentionally, for a few reasons
@@ -28,6 +23,7 @@ protected:
 	//TODO: what if the parent is destroyed while someone else holds a reference to this?
 	component* parent;
 	std::vector<std::shared_ptr<component>> children;
+	std::vector<std::reference_wrapper<double>> controlVars;
 	
 	virtual rect getRect(const rect &parent) const=0;
 	
@@ -38,12 +34,24 @@ protected:
 		children.push_back(child);
 		return child;
 	}
+	
+	template<typename...T>
+	void setControlVars(T&...args){
+		controlVars=std::vector<std::reference_wrapper<double>>({args...});
+	}
+	void appendControlVar(double& var);
+	
+	std::vector<double> copyControlVars();
+	void addChildrenControllsTo(std::vector<double>& target);
 public:
 	component(component* parentComponent);
 	
-	virtual controlPts getControls()=0;
-	virtual void setControls(const controlPts& raw)=0;
-	//this returns a copy, so it shoulnt be modified
+	//for serializing
+	virtual std::vector<double> getControls()=0;
+	virtual void setControls(std::vector<double>& controls)=0;
+	
+	//modifying the vector object returned by this is meaningless, so it should be const (only the pointers should be modified)
+	//TODO: is there some convenience justification that'd make it worth removing const?
 	virtual const std::vector<std::shared_ptr<component>> getChildren();
 	virtual rect getRealSize() const=0;//real-coordinate bounding box in milimiters, (0,0) is the center of the image sensor
 
@@ -58,6 +66,7 @@ public:
 	virtual void drawTo(pbuffer &pixels);
 	virtual void drawTo(pbuffer &pixels,const rect &target)=0;
 	
+	//this class's own functionality
 	static double minThickness;
 	
 	//searching functions

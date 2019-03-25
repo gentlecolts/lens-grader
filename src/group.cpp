@@ -10,16 +10,27 @@ group::group(lens* parent):component(parent){
 	//width=0.75;
 	range=0.25;
 	position=0.8;
+	
+	setControlVars(front,back,width,range,movementMultiplier);
 }
 
 group::~group(){
 	//dtor
 }
 
-controlPts group::getControls(){
-	throw logic_error("Not Implemented: "+string(__func__));
+vector<double> group::getControls(){
+	//group's controls
+	auto controls=copyControlVars();
+	
+	printf("Group added %i control vars\n",controls.size());
+	
+	//individual element controls
+	addChildrenControllsTo(controls);
+	
+	//and return
+	return controls;
 }
-void group::setControls(const controlPts& raw){
+void group::setControls(vector<double>& controls){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
 
@@ -49,7 +60,7 @@ rect group::getRect(const rect& parent) const{
 }
 rect group::getRealSize() const{
 	const auto r=getRect(parent->getRealSize());
-	printf("Group is bounded by: (%f, %f), (%f, %f)\n",r.x,r.y,r.w,r.h);
+	//printf("Group is bounded by: (%f, %f), (%f, %f)\n",r.x,r.y,r.w,r.h);
 	return r;
 }
 

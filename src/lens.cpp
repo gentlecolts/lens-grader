@@ -140,10 +140,14 @@ vector< rayPath > lens::initializeRays(double distanceFromFront, int resolution,
 	return rays;
 }
 
-controlPts lens::getControls(){
-	throw logic_error("Not Implemented: "+string(__func__));
+vector<double> lens::getControls(){
+	//lens itself has no controlpoints, but it does combine the control points of its children
+	vector<double> controls;
+	addChildrenControllsTo(controls);
+	printf("Total of %i control vars\n",controls.size());
+	return controls;
 }
-void lens::setControls(const controlPts& raw){
+void lens::setControls(vector<double>& controls){
 	throw logic_error("Not Implemented: "+string(__func__));
 }
 
@@ -268,7 +272,7 @@ void lens::drawTo(pbuffer &pixels,const rect &target){
 	intersectSensor(rays);
 	
 	//get the score
-	printf("Score: %f\n",gradeRays(rays));
+	//printf("Score: %f\n",gradeRays(rays));
 	
 	//draw just the initial segment
 	//const auto halfwidth=physicalLength/(2*aperature);

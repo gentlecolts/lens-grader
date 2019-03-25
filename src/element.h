@@ -18,15 +18,15 @@ protected:
 	virtual rect getRect(const rect& parent) const override;
 	
 	std::vector<double> frontVals,backVals;
-	double ior=1.6;//TODO
+	double ior=1.6;
 	
 	virtual void validate();
 public:
 	element(group* parent);
 	virtual ~element();
 
-	virtual controlPts getControls() override;
-	virtual void setControls(const controlPts& raw) override;
+	virtual std::vector<double> getControls() override;
+	virtual void setControls(std::vector<double>& controls) override;
 	virtual rect getRealSize() const override;
 
 	virtual void bounceRays(std::vector<rayPath>& paths) override;

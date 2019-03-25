@@ -25,8 +25,8 @@ public:
 	virtual ~lens();
 
 	//inherited from compoent
-	virtual controlPts getControls() override;
-	virtual void setControls(const controlPts& raw) override;
+	virtual std::vector<double> getControls() override;
+	virtual void setControls(std::vector<double>& controls) override;
 	virtual rect getRealSize() const override;
 
 	void bounceRays(std::vector<rayPath>& paths) override;
