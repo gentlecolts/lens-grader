@@ -62,8 +62,9 @@ public:
 	group(lens* parent);
 	virtual ~group();
 
-	std::vector< double > getControls() override;
-	virtual void setControls(std::vector< double >& controls) override;
+	virtual std::vector<double> getControls() override;
+	virtual std::vector<controlRef> getControlRefs() override;
+	virtual void setControls(std::vector<double>& controls) override;
 	virtual rect getRealSize() const override;
 
 	virtual void bounceRays(std::vector<rayPath>& paths) override;

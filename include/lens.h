@@ -26,6 +26,7 @@ public:
 
 	//inherited from compoent
 	virtual std::vector<double> getControls() override;
+	virtual std::vector<controlRef> getControlRefs() override;
 	virtual void setControls(std::vector<double>& controls) override;
 	virtual rect getRealSize() const override;
 

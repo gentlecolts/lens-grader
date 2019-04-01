@@ -143,8 +143,14 @@ vector< rayPath > lens::initializeRays(double distanceFromFront, int resolution,
 vector<double> lens::getControls(){
 	//lens itself has no controlpoints, but it does combine the control points of its children
 	vector<double> controls;
-	appendChildrenControllsTo(controls);
-	printf("Total of %i control vars\n",controls.size());
+	appendChildrenControlsTo(controls);
+	//printf("Total of %i control vars\n",controls.size());
+	return controls;
+}
+vector<controlRef> lens::getControlRefs(){
+	vector<controlRef> controls;
+	appendChildrenControlRefsTo(controls);
+	//printf("Total of %i control refs\n",controls.size());
 	return controls;
 }
 void lens::setControls(vector<double>& controls){

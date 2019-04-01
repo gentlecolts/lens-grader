@@ -22,10 +22,20 @@ vector<double> group::getControls(){
 	//group's controls
 	auto controls=copyControlVars();
 	
-	printf("Group added %i control vars\n",controls.size());
+	//printf("Group added %i control vars\n",controls.size());
 	
 	//individual element controls
-	appendChildrenControllsTo(controls);
+	appendChildrenControlsTo(controls);
+	
+	//and return
+	return controls;
+}
+vector<controlRef> group::getControlRefs(){
+	//we need a copy, we dont want to modify controlVars
+	vector<controlRef> controls(controlVars.begin(),controlVars.end());
+	
+	//individual element controls
+	appendChildrenControlRefsTo(controls);
 	
 	//and return
 	return controls;

@@ -14,6 +14,8 @@ constexpr const T& clamp(const T& v,const T& lo,const T& hi){
 	return (v<lo)?lo:(hi<v)?hi:v;
 }
 
+typedef std::reference_wrapper<double> controlRef;
+
 class component:public std::enable_shared_from_this<component>{
 protected:
 	//this is kept raw intentionally, for a few reasons
@@ -23,7 +25,7 @@ protected:
 	//TODO: what if the parent is destroyed while someone else holds a reference to this?
 	component* parent;
 	std::vector<std::shared_ptr<component>> children;
-	std::vector<std::reference_wrapper<double>> controlVars;
+	std::vector<controlRef> controlVars;
 	
 	virtual rect getRect(const rect &parent) const=0;
 	
@@ -37,18 +39,20 @@ protected:
 	
 	template<typename...T>
 	void setControlVars(T&...args){
-		controlVars=std::vector<std::reference_wrapper<double>>({args...});
+		controlVars=std::vector<controlRef>({args...});
 	}
 	void appendControlVar(double& var);
 	
 	std::vector<double> copyControlVars();
-	void appendChildrenControllsTo(std::vector<double>& target);
+	void appendChildrenControlsTo(std::vector<double>& target);
+	void appendChildrenControlRefsTo(std::vector<controlRef>& target);
 	void consumeControlVars(std::vector<double>& source);
 public:
 	component(component* parentComponent);
 	
 	//for serializing
 	virtual std::vector<double> getControls()=0;
+	virtual std::vector<controlRef> getControlRefs()=0;
 	virtual void setControls(std::vector<double>& controls)=0;
 	
 	//modifying the vector object returned by this is meaningless, so it should be const (only the pointers should be modified)

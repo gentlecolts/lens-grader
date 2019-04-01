@@ -26,6 +26,9 @@ vector<double> element::getControls(){
 	
 	return controls;
 }
+vector<controlRef> element::getControlRefs(){
+	return vector<controlRef>(controlVars.begin(),controlVars.end());
+}
 void element::setControls(vector<double>& controls){
 	consumeControlVars(controls);
 }

@@ -11,12 +11,19 @@ vector<double> component::copyControlVars(){
 	return vector<double>(controlVars.begin(),controlVars.end());
 }
 
-void component::appendChildrenControllsTo(vector<double>& target){
+void component::appendChildrenControlsTo(vector<double>& target){
 	for(auto child:children){
 		const auto c=child->getControls();
 		target.insert(target.end(),c.begin(),c.end());
 	}
 }
+void component::appendChildrenControlRefsTo(vector<controlRef>& target){
+	for(auto child:children){
+		const auto c=child->getControlRefs();
+		target.insert(target.end(),c.begin(),c.end());
+	}
+}
+
 void component::consumeControlVars(vector<double>& source){
 	const auto N=controlVars.size();
 	
