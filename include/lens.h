@@ -4,6 +4,12 @@
 #include "component.h"
 
 class group;
+class groupGeometry;
+
+struct lensGeometry{
+	std::vector<groupGeometry> groups;
+	//TODO: mount type?
+};
 
 class lens:public component{
 protected:
@@ -41,6 +47,9 @@ public:
 	virtual std::shared_ptr<group> getFrontGroup();
 	virtual std::shared_ptr<group> getBackGroup();
 	virtual const std::vector<std::shared_ptr<group>> getGroups();
+	
+	//same as with group.h, would a subclass ever change this?
+	lensGeometry getGeometry();
 };
 
 #endif // LENS_H

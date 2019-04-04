@@ -6,6 +6,13 @@
 class element;
 class lens;
 
+struct groupGeometry{
+	//these are the values at position=0
+	std::vector<std::vector<point>> lenses;
+	//offset by this much when position=1
+	double travel;
+};
+
 /*group with many elements
 all elements within the group move together, if at all
 elements may overlap for more complex shapes
@@ -90,6 +97,9 @@ public:
 	addElement(){
 		return newChildComponent<T>(this);
 	}
+	
+	//TODO: virtual?  what if a subclass needs new geometry properties?  and if not, what more could a subclass need that this doesnt provide
+	groupGeometry getGeometry();
 };
 
 #endif // GROUP_H

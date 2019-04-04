@@ -20,11 +20,13 @@ element::~element(){
 }
 
 vector<double> element::getControls(){
+	/*
 	auto controls=copyControlVars();
-	
-	printf("Element added %i control vars\n",controls.size());
-	
+	printf("Element added %ui control vars\n",(uint)controls.size());
 	return controls;
+	/*/
+	return copyControlVars();
+	//*/
 }
 vector<controlRef> element::getControlRefs(){
 	return vector<controlRef>(controlVars.begin(),controlVars.end());
@@ -37,6 +39,10 @@ template <typename T> static constexpr int sgn(T val){
     return (T(0)<val)-(val<T(0));
 }
 
+template<typename T>
+static constexpr T square(const T& x){
+	return x*x;
+}
 static inline auto circleIntersection(const circle &e,const ray &r){
 	/*
 	x=dx*t+x0
@@ -47,7 +53,6 @@ static inline auto circleIntersection(const circle &e,const ray &r){
 	(dx*t)^2+2*dx*t*(x0-cx0)+(x0-cx0)^2+(dy*t)^2+2*(dy*t)*(y0-cy0)+(y0-cy0)^2=r^2
 	(dx^2+dy^2)*t^2+(2*dx*(x0-cx0)+2*dy*(y0-cy0))*t+(x0-cx0)^2+(y0-cy0)^2-r^2=0
 	*/
-	const auto square=[](auto a){return a*a;};
 	const double
 		a=square(r.dir.x)+square(r.dir.y),
 		b=2*(r.dir.x*(r.p.x-e.x0)+r.dir.y*(r.p.y-e.y0)),
@@ -100,6 +105,10 @@ static inline void refractCircle(vector<rayPath>& paths,const double planeY,cons
 	}
 }
 
+static inline auto getXminmax(const rect& r,const double width){
+	return make_tuple(r.x+r.w*(1-width)/2,r.x+r.w*(1+width)/2);
+}
+
 void element::bounceRays(vector< rayPath >& paths){
 	//printf("element bouncerays\n");
 	
@@ -109,12 +118,6 @@ void element::bounceRays(vector< rayPath >& paths){
 	std::tie(frontCircle,backCircle)=getFrontBack(bounds);
 	
 	//printf("Real Bounds: [%f, %f, %f, %f]\n",bounds.x,bounds.y,bounds.w,bounds.h);
-	
-	//TODO: investigate how to best share this function without hurting performance
-	//TODO: if circle is changed to elipse, then this needs to be changed
-	const auto getXminmax=[](const rect& r,const double width)->tuple<double,double>{
-		return make_tuple(r.x+r.w*(1-width)/2,r.x+r.w*(1+width)/2);
-	};
 	
 	//check the front element, if it intersects at t<0 then ignore the intersection
 	double t,xmin,xmax;
@@ -328,3 +331,42 @@ bool element::isValid(){
 	return true;
 }
 
+static inline void addSurfaceTo(vector<point>& points,double xmin,double xmax,const circle& circle,bool reverse=false){
+	const int n=100;
+	const double dx=(xmax-xmin)/(n-1);
+	const int sign=circle.upper?1:-1;
+	for(int i=0;i<n;i++){
+		const double x=reverse?xmax-i*dx:xmin+i*dx;
+		const double y=circle.y0+sign*sqrt(circle.r-square(x-circle.x0));
+		points.push_back(point(x,y));
+	}
+}
+vector<point> element::getSurface(){
+	vector<point> points;
+	//get our spheres in real-world coords
+	circle frontCircle,backCircle;
+	const auto bounds=getRealSize();
+	double xmin,xmax;
+	tie(frontCircle,backCircle)=getFrontBack(bounds);
+	
+	//start with the front surface, going left to right
+	double y=bounds.y+frontVals[1]*bounds.h;
+	tie(xmin,xmax)=getXminmax(bounds,frontVals[2]);
+	points.push_back(point(bounds.x,y));
+	points.push_back(point(xmin,y));
+	addSurfaceTo(points,xmin,xmax,frontCircle);
+	points.push_back(point(xmax,y));
+	points.push_back(point(bounds.x+bounds.w,y));
+	
+	//then the back surface, but backwards, since we want to make a loop, we do it right to left
+	y=bounds.y+backVals[1]*bounds.h;
+	tie(xmin,xmax)=getXminmax(bounds,backVals[2]);
+	points.push_back(point(bounds.x+bounds.w,y));
+	points.push_back(point(xmax,y));
+	addSurfaceTo(points,xmin,xmax,frontCircle,true);
+	points.push_back(point(xmin,y));
+	points.push_back(point(bounds.x,y));
+	
+	//and we're done
+	return points;
+}

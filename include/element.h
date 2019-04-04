@@ -46,7 +46,7 @@ public:
 	//TODO: should this be a compontent function instead?  can a group non-trivially invalid?
 	virtual bool isValid();
 	
-	std::vector<point> getSurface();
+	virtual std::vector<point> getSurface();
 };
 
 #endif // ELEMENT_H

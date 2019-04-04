@@ -361,3 +361,14 @@ double lens::getScore(){
 	//TODO: Evaluate result
 	return gradeRays(rays);
 }
+
+lensGeometry lens::getGeometry(){
+	lensGeometry geo;
+	for(auto child:children){
+		if(auto g=dynamic_pointer_cast<group>(child)){
+			geo.groups.push_back(g->getGeometry());
+		}
+	}
+	
+	return geo;
+}

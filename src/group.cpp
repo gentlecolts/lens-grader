@@ -161,3 +161,28 @@ double group::getMovementMultiplier(){
 void group::reevaluateDims(){
 	//TODO: the group has just been modified, if it's now overlapping any other groups, we need to adjust those groups appropriately
 }
+
+groupGeometry group::getGeometry(){
+	//save the state of the position, this function returns the geometry when at position 0, and the y translation needed to reach position=1
+	//NOTE: getSurface will eventually call this object's getRealSize, so it does take position into account
+	auto originalPos=position;
+	position=0;
+	
+	groupGeometry geo;
+	for(auto child:children){
+		if(auto e=dynamic_pointer_cast<element>(child)){
+			geo.lenses.push_back(e->getSurface());
+		}
+	}
+	
+	//now get the front and back.  this can probably be simplified, but it works
+	const auto y0=getRealSize().y;
+	position=1;
+	auto y1=getRealSize().y;
+	geo.travel=y1-y0;
+	
+	//reset the position
+	position=originalPos;
+	
+	return geo;
+}
