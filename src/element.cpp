@@ -3,17 +3,28 @@
 #include <cmath>
 using namespace std;
 
-element::element(group* parent):component(parent){
-	//defaults
-	setSphereFrontBack(.6,.65,1,.5,.45,1);
-	
-	//set up our controls
+void element::initializeControlVars(){
+	//make sure we dont have anything in the vector
+	controlVars.clear();
+	//and set it to the proper values
 	for(double& val:frontVals){
 		appendControlVar(val);
 	}
 	for(double& val:backVals){
 		appendControlVar(val);
 	}
+}
+shared_ptr<component> element::copy() const{
+	auto ecopy=make_shared<element>(*this);
+	ecopy->initializeControlVars();
+	return ecopy;
+}
+
+element::element(group* parent):component(parent){
+	//defaults
+	setSphereFrontBack(.6,.65,1,.5,.45,1);
+	
+	initializeControlVars();
 }
 element::~element(){
 	//dtor

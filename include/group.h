@@ -65,6 +65,9 @@ protected:
 	
 	//any time the front/back/range is changed, this should be called to push any other 
 	virtual void reevaluateDims();
+	
+	virtual void initializeControlVars() override;
+	virtual std::shared_ptr<component> copy() const override;
 public:
 	group(lens* parent);
 	virtual ~group();

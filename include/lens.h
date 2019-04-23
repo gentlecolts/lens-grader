@@ -25,7 +25,10 @@ protected:
 	//TODO: display ray count/simulation ray count should both be attributes of this class
 	virtual std::vector<rayPath> initializeRays(double distanceFromFront,int resolution,int samples);
 	
+	virtual void initializeControlVars() override;
+	virtual std::shared_ptr<component> copy() const override;
 public:
+	lens();
 	lens(int groupCount,double focalLen);
 	lens(std::vector<double> groupDivs,double focalLen);
 	virtual ~lens();

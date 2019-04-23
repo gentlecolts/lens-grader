@@ -29,7 +29,7 @@ void pollEvents(){
 }
 
 template<typename Iterator>
-void printVector(Iterator begin, Iterator end){
+static inline void printVector(Iterator begin, Iterator end){
 	cout<<"{";
 	bool second=false;
 	for(; begin != end; ++begin){
@@ -86,7 +86,18 @@ int main(int argc,char** argv){
 	l->setControls(control);
 	control=l->getControls();
 	printVector(control.begin(),control.end());
-
+	
+	//test copying
+	auto lCopy=l->clone();
+	auto copyControls=lCopy->getControls();
+	copyControls[0]=.6;
+	lCopy->setControls(copyControls);
+	//make sure only the copy changed
+	control=l->getControls();
+	printVector(control.begin(),control.end());
+	control=lCopy->getControls();
+	printVector(control.begin(),control.end());
+	
 	while(1){
 		//SDL_FillRect(surface,NULL,SDL_MapRGB(surface->format,0xe5,0x5c,0x69));
 		//SDL_FillRect(surface,&rec,0x7f00ff);

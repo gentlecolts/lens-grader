@@ -47,8 +47,16 @@ protected:
 	void appendChildrenControlsTo(std::vector<double>& target);
 	void appendChildrenControlRefsTo(std::vector<controlRef>& target);
 	void consumeControlVars(std::vector<double>& source);
+	
+	virtual void initializeControlVars()=0;
+	
+	//shallow copy, needed for making deep clones
+	virtual std::shared_ptr<component> copy() const=0;
 public:
 	component(component* parentComponent);
+	
+	//deep clone
+	virtual std::shared_ptr<component> clone() const;
 	
 	//for serializing
 	virtual std::vector<double> getControls()=0;

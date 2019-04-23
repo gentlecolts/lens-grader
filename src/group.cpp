@@ -5,13 +5,22 @@
 #include <iostream>
 using namespace std;
 
+void group::initializeControlVars(){
+	setControlVars(front,back,width,range,movementMultiplier);
+}
+shared_ptr<component> group::copy() const{
+	auto gcopy=make_shared<group>(*this);
+	gcopy->initializeControlVars();
+	return gcopy;
+}
+
 group::group(lens* parent):component(parent){
 	//ctor
 	//width=0.75;
 	range=0.25;
 	position=0.8;
 	
-	setControlVars(front,back,width,range,movementMultiplier);
+	initializeControlVars();
 }
 
 group::~group(){

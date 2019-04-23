@@ -41,6 +41,17 @@ static inline void intersectSensor(std::vector<rayPath>& rays){
 	}
 }
 
+void lens::initializeControlVars(){
+	//no control vars here yet
+}
+shared_ptr<component> lens::copy() const{
+	auto lcopy=make_shared<lens>(*this);
+	lcopy->initializeControlVars();
+	return lcopy;
+}
+
+lens::lens():lens(0,50){
+}
 lens::lens(int groupCount, double focalLen):component(nullptr),focalLength(focalLen){
 	groupCount=max(groupCount,1);//must have at least one group
 	
@@ -49,6 +60,9 @@ lens::lens(int groupCount, double focalLen):component(nullptr),focalLength(focal
 		g->setFront((double(i+1))/groupCount);
 		g->setBack((double(i))/groupCount);
 	}
+	
+	initializeControlVars();
+	
 	cout<<"made a lens with "<<children.size()<<" children"<<endl;
 }
 

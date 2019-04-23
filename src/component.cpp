@@ -54,3 +54,29 @@ void component::drawTo(pbuffer &pixels){
 const vector<shared_ptr<component>> component::getChildren(){
 	return children;
 }
+
+shared_ptr<component> component::clone() const{
+	//create a naive clone
+	auto newComponent=this->copy();
+	
+	//the children of this will just be pointers to the original one's children, we need to make a deep copy
+	/*
+	auto originalChildren=children;
+	newComponent->children.clear();
+	for(const auto& child:originalChildren){
+		auto newchild=child->clone();
+		newComponent->children.push_back(newchild);
+		newchild->parent=newComponent.get();
+		newchild->initializeControlVars();//NOTE: this should be handled already in the children
+	}
+	/*/
+	for(int i=0;i<newComponent->children.size();i++){
+		auto newchild=newComponent->children[i]->clone();
+		newComponent->children[i]=newchild;
+		newchild->parent=newComponent.get();
+		//newchild->initializeControlVars();//NOTE: this should be handled already in the children
+	}
+	//*/
+	
+	return newComponent;
+}

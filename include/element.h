@@ -21,6 +21,9 @@ protected:
 	double ior=1.6;
 	
 	virtual void validate();
+	
+	virtual void initializeControlVars() override;
+	virtual std::shared_ptr<component> copy() const override;
 public:
 	element(group* parent);
 	virtual ~element();
