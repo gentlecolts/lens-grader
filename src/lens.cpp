@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <limits>
+#include <cmath>
 using namespace std;
 
 struct lens::drawRects{

@@ -1,6 +1,7 @@
 #include "ray.h"
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 using namespace std;
 
 point::point():x(0),y(0){}
