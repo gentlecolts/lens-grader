@@ -62,16 +62,37 @@ int main(int argc,char** argv){
 	rec.h=100;
 	
 	//this pointer business isnt a requirement, but is used to make future tesing of various classes of lens objects easier
-	lens* l=new lens(vector<double>{.2,.6},100);
+	lens* l=new lens(vector<double>{.2,.6},50);
+	l->aperature=1.8;
 	//component* l=new lens(2,100);
 	
-	//auto g=dynamic_pointer_cast<group>(l->getChildren()[0]);
-	auto g=l->getFrontGroup();
-	auto elm=g->addElement<element>();
+	auto groups=l->getGroups();
+	vector<shared_ptr<element>> elms;
+	elms.reserve(groups.size());
+	
+	//put one element in each group, store the results in our elms array
+	transform(groups.begin(),groups.end(),back_inserter(elms),[](shared_ptr<group> g){
+		return g->addElement<element>();
+	});
+	
+	//set this one
+	auto& elm=elms[2];
 	elm->setSphereFront(.75,.7);
 	//elm->setSphereBack(.25,0,.5);
 	elm->setSphereBack(.4,.1);
 	
+	//another one
+	auto elm2=elms[1];
+	elm2->setSphereFront(.6,.8);
+	elm2->setSphereBack(.5,.3);
+	
+	//and one last one for the back
+	auto elm3=elms[0];
+	elm3->setSphereFront(.8,.6);
+	elm3->setSphereBack(.2,.3);
+	
+	//mess with the groups too
+	l->getGroups()[0]->setWidth(1);
 	l->getGroups()[2]->setWidth(1);
 	l->getGroups()[0]->setMovementMultiplier(0);
 	l->getGroups()[1]->setMovementMultiplier(0.5);

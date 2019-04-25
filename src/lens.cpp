@@ -53,7 +53,7 @@ shared_ptr<component> lens::copy() const{
 
 lens::lens():lens(0,50){
 }
-lens::lens(int groupCount, double focalLen):component(nullptr),focalLength(focalLen){
+lens::lens(int groupCount, double focalLen):component(nullptr),focalLength(focalLen),physicalLength(focalLen){
 	groupCount=max(groupCount,1);//must have at least one group
 	
 	for(int i=0;i<groupCount;i++){
@@ -67,7 +67,7 @@ lens::lens(int groupCount, double focalLen):component(nullptr),focalLength(focal
 	cout<<"made a lens with "<<children.size()<<" children"<<endl;
 }
 
-
+//TODO: test for an empty vector being passed
 lens::lens(std::vector<double> groupDivs,double focalLen):lens(groupDivs.size()+1,focalLen){
 	//sort the dividers
 	sort(groupDivs.begin(),groupDivs.end());
