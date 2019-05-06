@@ -384,6 +384,7 @@ lensGeometry lens::getGeometry(){
 			geo.groups.push_back(g->getGeometry());
 		}
 	}
+	geo.sensorToBack=sensorToBack;
 	
 	return geo;
 }

@@ -8,7 +8,9 @@ class groupGeometry;
 
 struct lensGeometry{
 	std::vector<groupGeometry> groups;
+	
 	//TODO: mount type?
+	double sensorToBack;
 };
 
 class lens:public component{
