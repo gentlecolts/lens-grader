@@ -363,6 +363,13 @@ vector<point> element::getSurface(){
 	//start with the front surface, going left to right
 	double y=bounds.y+frontVals[1]*bounds.h;
 	tie(xmin,xmax)=getXminmax(bounds,frontVals[2]);
+	
+	//TODO: lambda or static inline pls
+	y=frontCircle.y0+(frontCircle.upper?1:-1)*sqrt(frontCircle.r-square(xmax-frontCircle.x0));
+	
+	//if y is nan, then (probably from rounding error) x^2>r^2, but the intent was probably that x^2==r^2
+	if(!isfinite(y)){y=frontCircle.y0;}
+	
 	points.push_back(point(bounds.x,y));
 	points.push_back(point(xmin,y));
 	addSurfaceTo(points,xmin,xmax,frontCircle);
@@ -372,9 +379,16 @@ vector<point> element::getSurface(){
 	//then the back surface, but backwards, since we want to make a loop, we do it right to left
 	y=bounds.y+backVals[1]*bounds.h;
 	tie(xmin,xmax)=getXminmax(bounds,backVals[2]);
+	
+	//if((backCircle.upper && y<backCircle.y0) || (!backCircle.upper && y>backCircle.y0)){//this is just xnor
+		//y=backCircle.y0;
+		y=backCircle.y0+(backCircle.upper?1:-1)*sqrt(backCircle.r-square(xmax-backCircle.x0));
+	//}
+	if(!isfinite(y)){y=backCircle.y0;}
+	
 	points.push_back(point(bounds.x+bounds.w,y));
 	points.push_back(point(xmax,y));
-	addSurfaceTo(points,xmin,xmax,frontCircle,true);
+	addSurfaceTo(points,xmin,xmax,backCircle,true);
 	points.push_back(point(xmin,y));
 	points.push_back(point(bounds.x,y));
 	
