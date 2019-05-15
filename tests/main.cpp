@@ -61,6 +61,7 @@ int main(int argc,char** argv){
 	rec.w=160;
 	rec.h=100;
 	
+	/*
 	//this pointer business isnt a requirement, but is used to make future tesing of various classes of lens objects easier
 	lens* l=new lens(vector<double>{.2,.6},50);
 	l->aperature=1.8;
@@ -97,7 +98,35 @@ int main(int argc,char** argv){
 	l->getGroups()[0]->setMovementMultiplier(0);
 	l->getGroups()[1]->setMovementMultiplier(0.5);
 	l->getGroups()[2]->setMovementMultiplier(1);
-	//TODO: write shape to file
+	//TODO: write shape to file?
+	/*/
+	//test designs we've generated
+	lens* l=new lens(1,50);
+	
+	//just one element per group
+	auto groups=l->getGroups();
+	vector<shared_ptr<element>> elms;
+	elms.reserve(groups.size());
+	
+	//put one element in each group, store the results in our elms array
+	transform(groups.begin(),groups.end(),back_inserter(elms),[](shared_ptr<group> g){
+		return g->addElement<element>();
+	});
+	
+	//test values
+	auto refs=l->getControlRefs();
+	vector<double> testctrl=
+		//{0.958022, 0.321709, 0.774285, 0.0467319, 0.552074, 0.586138, 0.889669, 0.11583, 0.0928036, 0.394427, 0.97323}
+		//{0.942256, 0.471047, 0.682694, 0.764323, 0.746747, 0.574777, 0.184276, 0.915712, 0.648788, 0.725668, 0.598939}
+		{0.675, 0.635863, 0.898081, 0.00461669, 0.947681, 0.902055, 0.251039, 0.929925, 0.105492, 0.959667, 0.773671}
+	;
+	
+	cout<<"Test size: "<<testctrl.size()<<endl;
+	cout<<"AvailalbeRefs: "<<refs.size()<<endl;
+	for(int i=0;i<testctrl.size();i++){
+		refs[i].get()=testctrl[i];
+	}
+	//*/
 	
 	auto startTime = chrono::system_clock::now();
 	const double frequency=4*atan(1.0);

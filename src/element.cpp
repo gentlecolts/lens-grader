@@ -104,8 +104,8 @@ static inline void refractCircle(vector<rayPath>& paths,const double planeY,cons
 			t=-numeric_limits<double>::infinity();
 			
 			ray rcopy=r;
-			//rcopy.lost=true;
-			//path.segments.push_back(rcopy);
+			rcopy.lost=true;
+			path.segments.push_back(rcopy);
 		}
 		
 		//if elements are overlapping, it's possible for t to be negative
@@ -284,7 +284,8 @@ void element::drawTo(pbuffer &pixels,const rect &target){
 			j0=flipInsideBuffer(pixels,target,y0),
 			j1=flipInsideBuffer(pixels,target,y1);
 		if(j0>=j1){
-			printf("%i j=(%i %i) y=(%f %f) front=<%f %f %f> back=<%f %f %f>\n",i,j0,j1,y0,y1,frontX0,frontX1,frontY,backX0,backX1,backY);
+			//FIXME: whatever this was debugging
+			//printf("%i j=(%i %i) y=(%f %f) front=<%f %f %f> back=<%f %f %f>\n",i,j0,j1,y0,y1,frontX0,frontX1,frontY,backX0,backX1,backY);
 		}
 		for(int j=j0;j<=j1;j++){
 			//TODO: check bounds n stuff, or clip them above

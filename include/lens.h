@@ -23,13 +23,14 @@ protected:
 	
 	//TODO: display ray count/simulation ray count should both be attributes of this class
 	virtual std::vector<rayPath> initializeRays(double distanceFromFront,int resolution,int samples);
+	virtual double gradeRays(const std::vector<rayPath>& rays);
 	
 	virtual void initializeControlVars() override;
 	virtual std::shared_ptr<component> copy() const override;
 public:
 	//distances are in milimieters, aperature is f/a (ex f/2.8 is stored as 2.8)
 	//NOTE: it doesnt seem to cause any harm having these public, but this should not be considered a final api decision
-	double mountRadius=17,sensorToBack=46.50,imageCircleRadius=21.6333,physicalLength=100,focalLength=100,aperature=2.8;
+	double mountRadius=17,sensorToBack=46.50,imageCircleRadius=21.6333,physicalLength=100,focalLength=100,aperature=2;
 	
 	lens();
 	lens(int groupCount,double focalLen);

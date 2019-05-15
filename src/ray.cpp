@@ -88,12 +88,19 @@ void pbuffer::drawLinePixels(const point& p0, const point& p1,uint32_t color){
 }
 void pbuffer::drawLinePixels(const double x0, const double y0, const double x1, const double y1,uint32_t color){
 	const int dx=x1-x0,dy=y1-y0,n=max(abs(dx),abs(dy));
-	for(int i=0;i<=n;i++){
-		//TODO: do proper clipping and account for n=0
-		const int x=x0+(i*dx)/n,y=y0+(i*dy)/n;
-		//printf("drawing pixel at %i %i\n",x,y);
-		if(x>=0 && x<w && y>=0 && y<h){
-			pixels[x+w*y]=color;
+	
+	if(n){
+		for(int i=0;i<=n;i++){
+			//TODO: do proper clipping and account for n=0
+			const int x=x0+(i*dx)/n,y=y0+(i*dy)/n;
+			//printf("drawing pixel at %i %i\n",x,y);
+			if(x>=0 && x<w && y>=0 && y<h){
+				pixels[x+w*y]=color;
+			}
+		}
+	}else{
+		if(x0>=0 && x0<w && y0>=0 && y0<h){
+			pixels[int(x0+w*y0)]=color;
 		}
 	}
 }

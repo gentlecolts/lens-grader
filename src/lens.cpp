@@ -11,13 +11,21 @@ struct lens::drawRects{
 };
 
 //TODO: should this be a protected virtual of lens?
-static inline double gradeRays(const std::vector<rayPath>& rays){
+double lens::gradeRays(const std::vector<rayPath>& rays){
 	double squareErr=0;
 	int count=0;
 	for(auto& path:rays){
 		const ray& r=path.segments.back();
 		if(r.lost){
 			//good if the ray was supposed to be lost, bad if it wasnt, score this somehow
+			if(path.shouldBeLost){
+				//lost and should have been, this is "perfect" and so we give this ray a perfect score by adding nothing to the error
+				++count;
+			}else{
+				//lost and shouldnt have been, we'll just consider the error to have been the radius of the sensor
+				squareErr+=imageCircleRadius*imageCircleRadius;
+				++squareErr;
+			}
 		}else{
 			const double s=r.p.x - path.target.x;
 			//cout<<ray.segments.back().p.x<<" "<<ray.target.x<<" "<<s<<endl;
@@ -53,7 +61,7 @@ shared_ptr<component> lens::copy() const{
 
 lens::lens():lens(0,50){
 }
-lens::lens(int groupCount, double focalLen):component(nullptr),focalLength(focalLen),physicalLength(focalLen){
+lens::lens(int groupCount, double focalLen):component(nullptr),focalLength(focalLen){
 	groupCount=max(groupCount,1);//must have at least one group
 	
 	for(int i=0;i<groupCount;i++){
@@ -61,6 +69,8 @@ lens::lens(int groupCount, double focalLen):component(nullptr),focalLength(focal
 		g->setFront((double(i+1))/groupCount);
 		g->setBack((double(i))/groupCount);
 	}
+	
+	physicalLength=max(20.,focalLength-sensorToBack);
 	
 	initializeControlVars();
 	

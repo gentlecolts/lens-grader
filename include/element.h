@@ -18,7 +18,7 @@ protected:
 	virtual rect getRect(const rect& parent) const override;
 	
 	std::vector<double> frontVals,backVals;
-	double ior=1.6;
+	double ior=1.485;//Polyvinyl butyral has an ior of 1.485
 	
 	virtual void validate();
 	
