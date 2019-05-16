@@ -11,6 +11,9 @@ ray::ray():p(),dir(){}
 ray::ray(const point& origin,const point& direction):p(origin),dir(direction){}
 ray::ray(double x,double y,double dx,double dy):p(x,y),dir(dx,dy){}
 
+std::ostream& operator<<(std::ostream& strm, const point& p){
+	return strm<<"("<<p.x<<","<<p.y<<")";
+}
 
 ray& ray::fromPoints(const point& p0,const point& p1){
 	return fromPoints(p0.x,p0.y,p1.x,p1.y);

@@ -68,7 +68,7 @@ void group::bounceRays(vector< rayPath >& paths){
 rect group::getFullRect(const rect& parent) const{
 	rect myrec=parent;
 	myrec.w*=width;
-	myrec.h*=front-back;//
+	myrec.h*=max(front,back)-min(front,back);//
 	myrec.x+=(parent.w-myrec.w)/2;//target.center-myrec.w/2 = (target.x+target.w/2)-myrec.w/2 = target.x+(target.w-myrec.w)/2
 	myrec.y+=parent.h*back;
 	return myrec;

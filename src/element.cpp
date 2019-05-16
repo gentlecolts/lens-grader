@@ -136,6 +136,7 @@ void element::bounceRays(vector< rayPath >& paths){
 	tie(xmin,xmax)=getXminmax(bounds,frontVals[2]);
 	const auto fronty=bounds.y+frontVals[1]*bounds.h;
 	
+	//TODO: for generality and reusability, this should instead use the actual surface geometry from getSurface() and trace against that.  this will be more expensive, but more accurate as well
 	refractCircle(paths,fronty,xmin,xmax,bounds,frontCircle,ior);
 	
 	

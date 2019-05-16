@@ -3,12 +3,14 @@
 
 #include <cinttypes>
 #include <vector>
+#include <ostream>
 
 //TODO: use std::valarray instead
 struct point{
 	double x,y;
 	point();
 	point(double x0,double y0);
+	friend std::ostream& operator<<(std::ostream& strm, const point& p);
 };
 
 struct ray{

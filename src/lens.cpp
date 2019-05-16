@@ -249,7 +249,9 @@ lens::drawRects lens::getDrawRects(const rect& parent) const{
 }
 rect lens::getRealSize() const{
 	const auto width=physicalLength/aperature;
-	return rect(-width/2,sensorToBack,width,physicalLength);
+	const rect r(-width/2,sensorToBack,width,physicalLength);
+	//printf("Lens is bounded by: (%f, %f), (%f, %f)\n",r.x,r.y,r.w,r.h);
+	return r;
 }
 
 void lens::drawTo(pbuffer &pixels,const rect &target){
@@ -377,6 +379,7 @@ const vector<shared_ptr<group>> lens::getGroups(){
 }
 
 double lens::getScore(){
+	/*
 	//TODO: for each set of rays tested, we need to set the position appropriately
 	auto rays=initializeRays(numeric_limits<double>::infinity(),10,10);
 	bounceRays(rays);
@@ -385,6 +388,30 @@ double lens::getScore(){
 	
 	//TODO: Evaluate result
 	return gradeRays(rays);
+	/*/
+	const double closest=50;//closest focus in mm
+	const int samples=3;
+	
+	double focusPoint[samples+1];
+	focusPoint[0]=numeric_limits<double>::infinity();
+	for(int i=1;i<=samples;i++){
+		focusPoint[i]=(closest*samples)/i;
+	}
+	
+	double score=0;
+	for(int i=0;i<=samples;i++){
+		auto rays=initializeRays(focusPoint[i],10,10);
+		bounceRays(rays);
+		
+		setPosition(((double)i)/samples);
+		intersectSensor(rays);
+		
+		//TODO: Evaluate result
+		score+=gradeRays(rays);
+	}
+	
+	return score/(samples+1);
+	//*/
 }
 
 lensGeometry lens::getGeometry(){
