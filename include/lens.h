@@ -30,7 +30,7 @@ protected:
 public:
 	//distances are in milimieters, aperature is f/a (ex f/2.8 is stored as 2.8)
 	//NOTE: it doesnt seem to cause any harm having these public, but this should not be considered a final api decision
-	double mountRadius=18,sensorToBack=18,imageCircleRadius=21.6333,physicalLength=100,focalLength=100,aperature=1.8;
+	double mountRadius=18,sensorToBack=18,imageCircleRadius=21.6333,physicalLength=100,focalLength=100,aperature=1.2;
 	
 	lens();
 	lens(int groupCount,double focalLen);
